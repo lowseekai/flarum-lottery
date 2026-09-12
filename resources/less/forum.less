@@ -1,0 +1,570 @@
+:root {
+  --lottery-option-color: var(--muted-color);
+  --lottery-option-active-color: var(--secondary-color);
+}
+.Badge--lottery {
+  background: #c72828;
+}
+.ComposerBody-lottery {
+  margin-right: 15px;
+
+  .LotteryLabel {
+    font-size: 85%;
+    font-weight: 600;
+    display: inline-block;
+    padding: 0.1em 0.5em;
+    border-radius: var(--border-radius);
+    background: var(--body-bg);
+    color: var(--control-color);
+    text-transform: none;
+    border: 1px solid var(--primary-color);
+
+    &.none {
+      background: transparent;
+      border: 1px dotted var(--muted-color);
+      color: var(--muted-color);
+    }
+  }
+}
+
+.countdown-container {
+  opacity: 0.68;
+  .clockdiv {
+    font-family: Helvetica, sans-serif ;
+    color: #fff;
+    display: inline-block;
+    font-weight: 100;
+    text-align: center;
+    font-size: 30px;
+    margin-bottom: -30px;
+  }
+
+
+  .clockdiv > div {
+    padding: 10px;
+    display: inline-block;
+  }
+
+  .clockdiv div > span {
+    padding: 15px;
+    border-radius: 3px;
+    background: #333;
+    display: inline-block;
+  }
+
+  i.fontawicon {
+    margin-right: 8px;
+  }
+
+  .smalltext {
+    padding-top: 5px;
+    font-size: 16px;
+    color: #fff;
+  }
+
+  .cntdwn-widget {
+    width: 160px;
+    margin: 0px -40px;
+  }
+
+  .countdown-container {
+    text-align: center;
+  }
+}
+
+.event-text {
+  color: #fff;
+}
+
+h2.event-text {
+  margin-bottom: 1px;
+  margin-top: 0;
+}
+
+/*@media screen and (max-width: 1099px) {
+  .countdown-container {
+    display: none;
+  }
+}*/
+.letterpress {
+  font-family: Helvetica, sans-serif;
+  text-shadow: 1px 2px 3px #DDEEFF,
+  0 0 0 black,
+  -1px 1px 0 #DDEEFF,
+  1px 1px 0 white;
+  margin-top: 0px;
+  color: @primary-color;
+  font-size: 50px;
+  font-weight: bold;
+}
+
+.MinMaxSelector {
+  .MinMaxSelector--inputs {
+    display: flex
+  }
+
+  .MinMaxSelector--inputs .Button {
+    --button-color: #93806c;
+    --button-bg: #000;
+    --button-bg-hover: #000;
+    --button-bg-active: #000;
+    --button-bg-disabled: #000
+  }
+
+  .MinMaxSelector--inputs .Button .icon {
+    margin-right: 0
+  }
+
+  .MinMaxSelector--inputs .MinMaxSelector--placeholder {
+    text-align: center
+  }
+
+  .MinMaxSelector--inputs > :not(:first-child):not(:last-child) {
+    border-radius: 0
+  }
+
+  .MinMaxSelector--inputs > :first-child:not(:last-child) {
+    margin-left: 0;
+    border-top-right-radius: 0;
+    border-bottom-right-radius: 0
+  }
+
+  .MinMaxSelector--inputs > :last-child:not(:first-child) {
+    border-top-left-radius: 0;
+    border-bottom-left-radius: 0
+  }
+}
+
+.LotteryDiscussionModal {
+  .Form-group {
+    margin-top: 5px;
+
+    &.hide {
+      display: none;
+    }
+  }
+
+  input.FormControl {
+    &:invalid {
+      background-color: var(--alert-error-bg);
+      color: var(--alert-error-color);
+    }
+
+    + .FormControl {
+      margin-top: 5px;
+    }
+  }
+
+  .LotteryModal--answers {
+    margin-bottom: 20px;
+
+    .Form-group {
+      display: flex;
+      margin-top: 2.5px;
+      margin-bottom: 18px;
+    }
+
+    fieldset {
+      flex-grow: 1;
+    }
+  }
+
+  .LotteryModal--button {
+    flex-shrink: 1;
+    margin-left: 10px;
+    text-align: right;
+
+    .Button--color(@muted-color; darken(@control-bg, 5%));
+
+    .icon {
+      margin-right: 0;
+      font-size: 12px;
+    }
+
+    &.small {
+      padding: 2px 7px;
+      float: right;
+    }
+  }
+
+  .LotteryModal--date {
+    display: flex;
+
+    input {
+      flex-grow: 1;
+    }
+
+    .Button {
+      flex-shrink: 1;
+      margin-left: 10px;
+    }
+  }
+
+  .LotteryModal-SubmitButton {
+    margin-top: 10px;
+  }
+
+  .LotteryModal-Button {
+    margin-bottom: 15px;
+  }
+
+  .Checkbox.disabled {
+    &, [disabled] {
+      cursor: not-allowed;
+    }
+
+    opacity: 0.5;
+  }
+}
+
+.Post-lottery {
+  .Post--hidden & {
+    opacity: 0.5;
+  }
+
+  .LotteryOptions {
+    display: block;
+    border: 1px solid @primary-color;
+    padding: 20px;
+    color: @primary-color;
+
+    .li{
+      list-style: circle;
+    }
+
+    .LotteryAnswer when (@nodeloc-lottery-options-color-blend = true) {
+      &-checkbox, &-text {
+        & when (@config-dark-mode =true) {
+          mix-blend-mode: difference;
+        }
+
+        & when (@config-dark-mode =false) {
+          mix-blend-mode: darken;
+        }
+      }
+    }
+  }
+  .PrizeInfo{
+    display: block;
+    border: 1px solid @primary-color;
+    padding: 20px;
+    background: linear-gradient(rgba(28, 28, 28, 0.5), rgba(0, 0, 0, 0.5)), url(/assets/covers/lottery_bg.png) repeat;
+    background-size: cover;
+
+    .PrizeDetails{
+      color:@primary-color;
+      font-size: 12px;
+      margin-bottom: 20px;
+      .amount{
+        background-color: #dafad7;
+      }
+      .price{
+        background-color: #ffffcb;
+      }
+      .min_participants{
+        background-color: #ebf8ff;
+      }
+      .max_participants{
+        background-color: #aeffff;
+      }
+      span{
+        padding: 5px;
+        background-color: #f3f3f3;
+        opacity: 0.8;
+      }
+    }
+
+  }
+
+  .Lottery-sticky {
+    position: sticky;
+    bottom: 0;
+    padding: 10px 0;
+    margin-top: 10px;
+    display: flex;
+    align-items: flex-start;
+    column-gap: 15px;
+    background-color: var(--body-bg);
+    .box-shadow(inset 0px 2px 0px 0px var(--muted-more-bg));
+
+    &:empty {
+      display: none;
+    }
+
+    .LotteryInfoText {
+      flex-grow: 1;
+      margin-bottom: 0;
+    }
+  }
+
+  & + & {
+    margin-top: 2em;
+  }
+
+  .LotteryHeading {
+    display: flex;
+    align-items: baseline;
+    gap: 10px;
+
+    &-title {
+      flex-grow: 1;
+    }
+
+    &-voters {
+      .Button--color-auto('button-primary');
+    }
+
+    .Button {
+      flex-shrink: 1;
+      padding: 6px 10px;
+
+      .icon {
+        margin-right: 0;
+      }
+    }
+  }
+}
+
+.LotteryOption {
+  &, .LotteryBar {
+    border-radius: 4px;
+  }
+
+  &:hover {
+    background: var(--muted-more-bg);
+  }
+
+  /* Percent */
+
+  .LotteryPercent {
+    padding-right: 5px;
+    font-size: 11px;
+    font-weight: 600;
+
+    &--option {
+      color: var(--muted-color);
+    }
+  }
+
+  .LotteryLabel {
+    font-size: 85%;
+    font-weight: 600;
+    display: inline-block;
+    padding: .1em .5em;
+    border-radius: 4px;
+    background: transparent;
+    color: var(--muted-color);
+    text-transform: none;
+  }
+
+  &:not(.Post--hidden &) {
+    .LotteryBar::after {
+      animation: slideInLotteryBackground 1s ease-in-out;
+      transition: background-size 0.75s ease-in-out;
+    }
+  }
+
+  .LotteryBar {
+    padding: 10px;
+    position: relative;
+    border: 2px solid var(--lottery-option-color);
+    overflow: hidden;
+    isolation: isolate;
+
+    display: grid;
+    grid-template-columns: auto 1fr;
+    grid-auto-flow: row;
+    gap: 10px;
+    align-items: flex-start;
+
+    .LotteryAnswer-checkbox {
+      grid-column: 1;
+      grid-row: 1;
+
+      + .LotteryAnswer-text {
+        grid-column: 2;
+      }
+    }
+
+    .LotteryAnswer-text {
+      grid-column: ~"1 / span 2";
+      grid-row: 1;
+
+      display: flex;
+      column-gap: 5px;
+      align-items: first baseline;
+
+      &-answer {
+        flex-grow: 1;
+      }
+    }
+
+    .LotteryAnswer-image {
+      grid-column: ~"1 / span 2";
+      grid-row: 2;
+      max-width: 100%;
+    }
+
+    &::after {
+      position: absolute;
+      top: 0;
+      bottom: 0;
+      right: 0;
+      left: 0;
+      z-index: -1;
+      background-image: linear-gradient(to right,
+      var(--lottery-option-color) 0% 100%);
+      background-size: var(--lottery-option-width) 100%;
+      background-repeat: no-repeat;
+      content: '';
+    }
+
+    .LotteryAnswer {
+      flex-grow: 1;
+    }
+
+    &[data-selected] {
+      --lottery-option-color: var(--lottery-option-active-color);
+    }
+  }
+
+  .LotteryAnswer-checkbox {
+    margin-bottom: 0;
+    position: relative;
+    z-index: 2;
+
+    input[type="checkbox"] {
+      position: absolute;
+      opacity: 0;
+      cursor: pointer;
+
+      &:checked ~ .checkmark:after {
+        display: block;
+      }
+
+      &[disabled] ~ .checkmark {
+        cursor: not-allowed;
+      }
+    }
+
+    .checkmark {
+      position: absolute;
+      top: 0;
+      left: 0;
+      height: 20px;
+      width: 20px;
+      border: 1px solid;
+      border-radius: 4px;
+
+      &:after {
+        content: "";
+        position: absolute;
+        display: none;
+        left: 6.75px;
+        top: 3px;
+        width: 5px;
+        height: 10px;
+        border: solid var(--text-color);
+        border-width: 0 3px 3px 0;
+        transform: rotate(45deg);
+      }
+    }
+  }
+}
+
+.ParticipantsModal {
+  &-list {
+    display: grid;
+    grid: auto-flow / repeat(auto-fill, minmax(150px, 1fr));
+    column-gap: 10px;
+    row-gap: 10px;
+    margin-bottom: 20px;
+
+    a {
+      color: var(--text-color);
+      font-size: 15px;
+      font-weight: bold;
+      display: block;
+      text-decoration: none;
+      text-overflow: ellipsis;
+      overflow: hidden;
+      white-space: nowrap;
+
+      &:hover .username {
+        text-decoration: underline;
+      }
+    }
+
+    .Avatar {
+      .Avatar--size(32px);
+      vertical-align: middle;
+      margin-right: 5px;
+    }
+  }
+
+  h2 {
+    margin-bottom: 15px;
+  }
+
+  h4 {
+    color: var(--text-color);
+    margin-top: 0;
+    margin-bottom: 20px;
+  }
+}
+
+.PublicLotteryButton {
+  display: block;
+  margin: 20px 15px;
+}
+
+.LotteryInfoText {
+  span {
+    display: block;
+  }
+
+  .icon {
+    margin-right: 2.5px;
+  }
+}
+.arrow {
+  position: relative;
+  width: 100%;
+  border-radius: 5px;
+  height: 2em;
+  margin-bottom: 2em;
+  border: 1px solid @primary-color;
+}
+
+.arrow-status {
+  text-align: right;
+  padding-top: .3em;
+  padding-right: .8em;
+  border-color: white;
+  border-right: 0.5em solid #ffca95;
+  width: 0%;
+  color: @primary-color;
+  height: 100%;
+  line-height: 1.2em;
+  -webkit-animation: width .5s ease-in;
+  background-color: #f93;
+  border-bottom-left-radius: 5px;
+  border-top-left-radius: 5px;
+}
+.arrow-pointer {
+  white-space: nowrap;
+}
+
+@-webkit-keyframes width {
+  from {
+    width: 0%;
+  }
+}
+@keyframes slideInLotteryBackground {
+  from {
+    background-size: 0 100%;
+  }
+  to {
+    background-size: var(--lottery-option-width) 100%;
+  }
+}

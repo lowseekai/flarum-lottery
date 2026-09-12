@@ -1,0 +1,52 @@
+{
+    "name": "nodeloc/lottery",
+    "description": " A Flarum extension that adds lottery to your discussions",
+    "keywords": [
+        "flarum"
+    ],
+    "type": "flarum-extension",
+    "license": "MIT",
+    "support": {
+        "issues": "https://github.com/nodeloc/lottery/issues",
+        "source": "https://github.com/nodeloc/lottery"
+    },
+    "homepage": "https://www.nodeloc.com",
+    "funding": [
+        {
+            "type": "website",
+            "url": "https://www.nodeloc.com"
+        }
+    ],
+    "require": {
+        "flarum/core": "^1.3.0",
+        "antoinefr/flarum-ext-money": "^1.3.0",
+        "mattoid/flarum-ext-money-history": "^1.1.1"
+    },
+    "authors": [
+        {
+            "name": "James",
+            "email": "james@nodeloc.com",
+            "role": "Developer"
+        }
+    ],
+    "autoload": {
+        "psr-4": {
+            "Nodeloc\\Lottery\\": "src/",
+            "Nodeloc\\Lottery\\Migrations\\": "migrations/"
+        }
+    },
+    "extra": {
+        "flarum-extension": {
+            "title": "Lottery",
+            "category": "discussion",
+            "icon": {
+                "name": "fas fa-gift",
+                "backgroundColor": "#006633",
+                "color": "#fff"
+            }
+        },
+        "flagrow": {
+            "discuss": "https://www.nodeloc.com"
+        }
+    }
+}
