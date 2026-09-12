@@ -46,7 +46,7 @@ class FinishLotteryBlueprint implements BlueprintInterface, AlertableInterface, 
      *
      * @return string
      */
-    public static function getType()
+    public static function getType(): string
     {
         return 'finishLottery';
     }
@@ -56,7 +56,7 @@ class FinishLotteryBlueprint implements BlueprintInterface, AlertableInterface, 
      *
      * @return string
      */
-    public static function getSubjectModel()
+    public static function getSubjectModel(): string
     {
         return Discussion::class;
     }
