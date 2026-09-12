@@ -233,12 +233,14 @@ h2.event-text {
     }
 
     .LotteryAnswer when (@nodeloc-lottery-options-color-blend = true) {
-      &-checkbox, &-text {
-        & when (@config-dark-mode =true) {
+      [data-theme^=dark] & {
+        &-checkbox, &-text {
           mix-blend-mode: difference;
         }
+      }
 
-        & when (@config-dark-mode =false) {
+      [data-theme^=light] & {
+        &-checkbox, &-text {
           mix-blend-mode: darken;
         }
       }
