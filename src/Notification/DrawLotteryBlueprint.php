@@ -2,28 +2,26 @@
 
 namespace Nodeloc\Lottery\Notification;
 
+use Flarum\Database\AbstractModel;
 use Flarum\Discussion\Discussion;
+use Flarum\Locale\TranslatorInterface;
+use Flarum\Notification\AlertableInterface;
 use Flarum\Notification\Blueprint\BlueprintInterface;
 use Flarum\Notification\MailableInterface;
-use Symfony\Contracts\Translation\TranslatorInterface;
 use Flarum\User\User;
 
-
-class DrawLotteryBlueprint implements BlueprintInterface, MailableInterface
+class DrawLotteryBlueprint implements BlueprintInterface, AlertableInterface, MailableInterface
 {
-    public $discussion;
-    public $actor;
-
-    public function __construct(Discussion $discussion, User $actor)
-    {
-        $this->discussion = $discussion;
-        $this->actor = $actor;
+    public function __construct(
+        public Discussion $discussion,
+        public User $actor
+    ) {
     }
 
     /**
      * Get the user that sent the notification.
      */
-    public function getFromUser()
+    public function getFromUser(): ?User
     {
         return $this->discussion->user;
     }
@@ -31,7 +29,7 @@ class DrawLotteryBlueprint implements BlueprintInterface, MailableInterface
     /**
      * Get the model that is the subject of this activity.
      */
-    public function getSubject()
+    public function getSubject(): ?AbstractModel
     {
         return $this->discussion;
     }
@@ -39,8 +37,9 @@ class DrawLotteryBlueprint implements BlueprintInterface, MailableInterface
     /**
      * Get the data to be stored in the notification.
      */
-    public function getData()
+    public function getData(): array
     {
+        return [];
     }
 
     /**
@@ -68,9 +67,12 @@ class DrawLotteryBlueprint implements BlueprintInterface, MailableInterface
      *
      * @return array{text?: string, html?: string}
      */
-    public function getEmailView()
+    public function getEmailViews(): array
     {
-        return ['text' => 'nodeloc-lottery::emails.drawLottery'];
+        return [
+            'text' => 'nodeloc-lottery::emails.drawLottery',
+            'html' => 'nodeloc-lottery::emails.drawLottery',
+        ];
     }
 
     /**
@@ -78,7 +80,7 @@ class DrawLotteryBlueprint implements BlueprintInterface, MailableInterface
      *
      * @return string
      */
-    public function getEmailSubject(TranslatorInterface $translator)
+    public function getEmailSubject(TranslatorInterface $translator): string
     {
         return $translator->trans('nodeloc-lottery.email.subject.drawLottery', [
             '{discussion_title}' => $this->discussion->title,

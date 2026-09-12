@@ -12,7 +12,7 @@ return [
         $schema->create('lottery_participants', function (Blueprint $table) {
             $table->increments('id');
             $table->unsignedInteger('lottery_id');
-            $table->unsignedTinyInteger('status')->comment('0 未中奖 1中奖');
+            $table->unsignedTinyInteger('status')->default(0);
             $table->unsignedInteger('user_id')->nullable();
             $table->timestamps();
 
@@ -29,9 +29,9 @@ return [
                 ->on('users')
                 ->onDelete('set null');
         });
-
     },
-    'down' => function (Builder $schema) {
 
+    'down' => function (Builder $schema) {
+        $schema->dropIfExists('lottery_participants');
     },
 ];

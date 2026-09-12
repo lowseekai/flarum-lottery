@@ -51,7 +51,7 @@ class SaveLotteryToDatabase
 
     public function handle(Saving $event)
     {
-        if ($event->post->exists || !isset($event->data['attributes']['lottery'])) {
+        if ($event->post->exists || ! isset($event->data['attributes']['lotteryData'])) {
             return;
         }
 
@@ -65,7 +65,7 @@ class SaveLotteryToDatabase
             ]);
         }
 
-        $attributes = (array) $event->data['attributes']['lottery'];
+        $attributes = (array) $event->data['attributes']['lotteryData'];
 
         $this->bus->dispatch(
             new CreateLottery(

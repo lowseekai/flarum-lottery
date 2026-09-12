@@ -1,31 +1,25 @@
 <?php
 
-/*
- * This file is part of nodeloc/lottery.
- *
- * Copyright (c) Nodeloc.
- *
- * For the full copyright and license information, please view the LICENSE
- * file that was distributed with this source code.
- */
-
 namespace Nodeloc\Lottery;
 
-use Flarum\Api\Controller;
-use Flarum\Api\Serializer;
-use Flarum\Api\Serializer\DiscussionSerializer;
-use Flarum\Api\Serializer\ForumSerializer;
-use Flarum\Api\Serializer\PostSerializer;
-use Flarum\Api\Serializer\UserSerializer;
-use Flarum\User\User;
+use Flarum\Api\Context;
+use Flarum\Api\Endpoint;
+use Flarum\Api\Resource;
+use Flarum\Api\Schema;
 use Flarum\Discussion\Discussion;
-use Flarum\Discussion\Event\Saving;
+use Flarum\Discussion\Event\Saving as DiscussionSaving;
 use Flarum\Extend;
 use Flarum\Post\Event\Saving as PostSaving;
 use Flarum\Post\Post;
-use Flarum\Settings\Event\Saved as SettingsSaved;
-use Nodeloc\Lottery\Api\Controllers;
-use Nodeloc\Lottery\Api\Serializers\LotterySerializer;
+use Flarum\User\User;
+use Nodeloc\Lottery\Api\PendingLotteryData;
+use Nodeloc\Lottery\Api\Resource\LotteryOptionResource;
+use Nodeloc\Lottery\Api\Resource\LotteryParticipantResource;
+use Nodeloc\Lottery\Api\Resource\LotteryResource;
+use Nodeloc\Lottery\Commands\CreateLottery;
+use Nodeloc\Lottery\Notification\DrawLotteryBlueprint;
+use Nodeloc\Lottery\Notification\FailLotteryBlueprint;
+use Nodeloc\Lottery\Notification\FinishLotteryBlueprint;
 
 return [
     (new Extend\Frontend('forum'))
@@ -37,65 +31,118 @@ return [
         ->css(__DIR__.'/resources/less/admin.less'),
 
     new Extend\Locales(__DIR__.'/resources/locale'),
+
     (new Extend\View())
-        ->namespace('nodeloc-lottery', __DIR__.'/views'),
-    (new Extend\Routes('api'))
-        ->post('/nodeloc/lottery', 'nodeloc.lottery.create', Controllers\CreateLotteryController::class)
-        ->get('/nodeloc/lottery/{id}', 'nodeloc.lottery.show', Controllers\ShowLotteryController::class)
-        ->patch('/nodeloc/lottery/{id}', 'nodeloc.lottery.edit', Controllers\EditLotteryController::class)
-        ->delete('/nodeloc/lottery/{id}', 'nodeloc.lottery.delete', Controllers\DeleteLotteryController::class)
-        ->patch('/nodeloc/lottery/{id}/enter', 'nodeloc.lottery.enter', Controllers\EnterLotteryController::class),
-    (new Extend\ApiSerializer(UserSerializer::class))
-        ->attributes(AddLotteryCountAttributes::class),
+        ->namespace('nodeloc-lottery', __DIR__.'/resources/views'),
+
+    new Extend\ApiResource(LotteryResource::class),
+    new Extend\ApiResource(LotteryOptionResource::class),
+    new Extend\ApiResource(LotteryParticipantResource::class),
+
     (new Extend\Model(Post::class))
         ->hasOne('lottery', Lottery::class, 'post_id', 'id'),
 
     (new Extend\Model(Discussion::class))
-        ->hasOne('lottery', Lottery::class, 'post_id', 'first_post_id'),
+        ->hasOne('lottery', Lottery::class, 'post_id', 'first_post_id')
+        ->cast('is_lottery', 'bool'),
 
     (new Extend\Event())
-        ->listen(Saving::class,Listeners\SaveLotteryToDiscussion::class)
+        ->listen(DiscussionSaving::class, Listeners\SaveLotteryToDiscussion::class)
         ->listen(PostSaving::class, Listeners\SaveLotteryToDatabase::class)
-        ->listen(SettingsSaved::class, Listeners\ClearFormatterCache::class),
+        ->listen(\Flarum\Settings\Event\Saved::class, Listeners\ClearFormatterCache::class),
 
-    (new Extend\ApiSerializer(DiscussionSerializer::class))
-        ->attributes(Api\AddDiscussionAttributes::class),
+    (new Extend\ApiResource(Resource\DiscussionResource::class))
+        ->fields(fn () => [
+            Schema\Boolean::make('hasLottery')
+                ->get(fn (Discussion $discussion) => (bool) $discussion->is_lottery),
+            Schema\Boolean::make('canStartLottery')
+                ->get(fn (Discussion $discussion, Context $context) => $context->getActor()->can('discussion.lottery.start', $discussion)),
+            Schema\Arr::make('lotteryData')
+                ->hidden()
+                ->writableOnCreate()
+                ->set(function (Discussion $discussion, array $value) {
+                    $discussion->is_lottery = true;
+                    PendingLotteryData::set($discussion, $value);
+                }),
+            Schema\Relationship\ToOne::make('lottery')
+                ->type('lotteries')
+                ->includable(),
+        ])
+        ->endpoint(
+            [Endpoint\Show::class, Endpoint\Create::class],
+            function (Endpoint\Show|Endpoint\Create $endpoint): Endpoint\Endpoint {
+                return $endpoint->addDefaultInclude([
+                    'firstPost.lottery',
+                    'firstPost.lottery.options',
+                    'firstPost.lottery.lotteryParticipants',
+                ]);
+            }
+        )
+        ->endpoint(
+            Endpoint\Create::class,
+            function (Endpoint\Create $endpoint): Endpoint\Endpoint {
+                return $endpoint->after(function (Context $context, $data) {
+                    $discussion = $context->model;
+                    $payload = $discussion instanceof Discussion
+                        ? PendingLotteryData::pull($discussion)
+                        : null;
 
-    (new Extend\ApiSerializer(PostSerializer::class))
-        ->hasOne('lottery', LotterySerializer::class)
-        ->attributes(Api\AddPostAttributes::class),
+                    if ($payload && $discussion instanceof Discussion && $discussion->firstPost) {
+                        resolve(\Flarum\Bus\Dispatcher::class)->dispatch(new CreateLottery(
+                            $context->getActor(),
+                            $discussion->firstPost,
+                            $payload,
+                        ));
+                    }
 
-    (new Extend\ApiSerializer(ForumSerializer::class))
-        ->attributes(Api\AddForumAttributes::class),
+                    return $data;
+                });
+            }
+        ),
 
-    (new Extend\ApiController(Controller\ListDiscussionsController::class))
-        ->addOptionalInclude(['firstPost.lottery']),
+    (new Extend\ApiResource(Resource\PostResource::class))
+        ->fields(fn () => [
+            Schema\Boolean::make('canStartLottery')
+                ->get(fn (Post $post, Context $context) => $context->getActor()->can('startLottery', $post)),
+            Schema\Arr::make('lotteryData')
+                ->hidden()
+                ->writableOnCreate()
+                ->set(fn () => null),
+            Schema\Relationship\ToOne::make('lottery')
+                ->type('lotteries')
+                ->includable(),
+        ])
+        ->endpoint(
+            [
+                Endpoint\Create::class,
+                Endpoint\Show::class,
+                Endpoint\Update::class,
+            ],
+            function (Endpoint\Create|Endpoint\Show|Endpoint\Update $endpoint): Endpoint\Endpoint {
+                return $endpoint->addDefaultInclude([
+                    'lottery',
+                    'lottery.options',
+                    'lottery.lotteryParticipants',
+                ]);
+            }
+        ),
 
-    (new Extend\ApiController(Controller\ShowDiscussionController::class))
-        ->addInclude(['posts.lottery', 'posts.lottery.options', 'posts.lottery.lottery_participants'])
-        ->addOptionalInclude(['posts.lottery.participants', 'posts.lottery.participants.user']),
+    (new Extend\ApiResource(Resource\ForumResource::class))
+        ->fields(fn () => [
+            Schema\Boolean::make('canStartLottery')
+                ->get(fn ($forum, Context $context) => $context->getActor()->can('discussion.lottery.start')),
+        ]),
 
-    (new Extend\ApiController(Controller\CreateDiscussionController::class))
-        ->addInclude(['firstPost.lottery', 'firstPost.lottery.options', 'firstPost.lottery.lottery_participants'])
-        ->addOptionalInclude(['firstPost.lottery.participants', 'firstPost.lottery.participants.user']),
-
-    (new Extend\ApiController(Controller\CreatePostController::class))
-        ->addInclude(['lottery', 'lottery.options', 'lottery.participants', 'lottery.participants.user'])
-        ->addOptionalInclude(['lottery.participants', 'lottery.participants.user']),
-
-    (new Extend\ApiController(Controller\ListPostsController::class))
-        ->addInclude(['lottery', 'lottery.options', 'lottery.participants', 'lottery.participants.user', 'lottery.lottery_participants'])
-        ->addOptionalInclude(['lottery.participants', 'lottery.participants.user']),
-
-    (new Extend\ApiController(Controller\ShowPostController::class))
-        ->addInclude(['lottery', 'lottery.options', 'lottery.participants', 'lottery.participants.user', 'lottery.lottery_participants'])
-        ->addOptionalInclude(['lottery.participants', 'lottery.participants.user']),
-
+    (new Extend\ApiResource(Resource\UserResource::class))
+        ->fields(fn () => [
+            Schema\Integer::make('lotteryCount')
+                ->get(fn (User $user) => Lottery::query()->where('user_id', $user->id)->count()),
+        ]),
 
     (new Extend\Console())
         ->command(Console\RefreshParticipantsCountCommand::class)
         ->command(Console\DrawCommand::class)
-        ->schedule(Console\DrawCommand::class,Console\DrawSchedule::class),
+        ->schedule(Console\DrawCommand::class, Console\DrawSchedule::class),
 
     (new Extend\Policy())
         ->modelPolicy(Lottery::class, Access\LotteryPolicy::class)
@@ -109,10 +156,12 @@ return [
         ->registerLessConfigVar('nodeloc-lottery-options-color-blend', 'nodeloc-lottery.optionsColorBlend', function ($value) {
             return $value ? 'true' : 'false';
         }),
+
     (new Extend\Notification())
-    ->type(Notification\DrawLotteryBlueprint::class, Serializer\BasicDiscussionSerializer::class, ['alert', 'email'])
-    ->type(Notification\FailLotteryBlueprint::class, Serializer\BasicDiscussionSerializer::class, ['alert', 'email'])
-    ->type(Notification\FinishLotteryBlueprint::class, Serializer\BasicDiscussionSerializer::class, ['alert', 'email']),
+        ->type(DrawLotteryBlueprint::class, ['alert', 'email'])
+        ->type(FailLotteryBlueprint::class, ['alert', 'email'])
+        ->type(FinishLotteryBlueprint::class, ['alert', 'email']),
+
     (new Extend\ModelVisibility(Lottery::class))
         ->scope(Access\ScopeLotteryVisibility::class),
 ];

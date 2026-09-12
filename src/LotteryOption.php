@@ -20,9 +20,11 @@ class LotteryOption extends AbstractModel
      */
     public $timestamps = true;
 
-    protected $dates = [
-        'created_at',
-        'updated_at',
+    protected $casts = [
+        'operator' => 'integer',
+        'operator_value' => 'integer',
+        'created_at' => 'datetime',
+        'updated_at' => 'datetime',
     ];
 
     protected $fillable = ['operator_type', 'operator', 'operator_value'];

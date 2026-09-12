@@ -24,12 +24,15 @@ class LotteryParticipants extends AbstractModel
     /**
      * {@inheritdoc}
      */
-    protected $dates = [
-        'created_at',
-        'updated_at',
+    protected $casts = [
+        'status' => 'integer',
+        'lottery_id' => 'integer',
+        'user_id' => 'integer',
+        'created_at' => 'datetime',
+        'updated_at' => 'datetime',
     ];
 
-    protected $fillable = ['user_id'];
+    protected $fillable = ['user_id', 'status'];
 
     /**
      * @param $lotteryId

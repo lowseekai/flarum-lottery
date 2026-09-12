@@ -24,39 +24,46 @@ class LotteryPolicy extends AbstractPolicy
             return $this->deny();
         }
 
-        if ($lottery->public_lottery) {
-            return $this->allow();
-        }
+        return $this->allow();
     }
 
     public function view(User $actor, Lottery $lottery)
     {
-        if ($actor->can('view', $lottery->post)) {
+        if ($lottery->post && $actor->can('view', $lottery->post)) {
             return $this->allow();
         }
     }
 
     public function enter(User $actor, Lottery $lottery)
     {
-        if ($actor->can('lottery.enter', $lottery->post->discussion) && !$lottery->hasEnded()) {
+        if (
+            $lottery->post
+            && $lottery->post->discussion
+            && $actor->can('discussion.lottery.enter', $lottery->post->discussion)
+            && ! $lottery->hasEnded()
+        ) {
             return $this->allow();
         }
     }
 
     public function cancelEnter(User $actor, Lottery $lottery)
     {
-        if ($lottery->allow_cancel_enter && $actor->hasPermission('lottery.cancelEnter')) {
+        if ($lottery->can_cancel_enter && $actor->hasPermission('lottery.cancelEnter')) {
             return $this->allow();
         }
     }
 
     public function edit(User $actor, Lottery $lottery)
     {
-        if ($actor->can('lottery.moderate', $lottery->post->discussion)) {
+        if (
+            $lottery->post
+            && $lottery->post->discussion
+            && $actor->can('discussion.lottery.moderate', $lottery->post->discussion)
+        ) {
             return $this->allow();
         }
 
-        if (!$lottery->hasEnded() && $actor->can('edit', $lottery->post)) {
+        if ($lottery->post && ! $lottery->hasEnded() && $actor->can('edit', $lottery->post)) {
             // User either created lottery & can edit own lottery or can edit all lottery in post
             if (($actor->id === $lottery->user_id && $actor->hasPermission('lottery.selfEdit'))
                 || ($actor->id == $lottery->post->user_id && $actor->hasPermission('lottery.selfPostEdit'))) {

@@ -32,11 +32,31 @@ class Lottery extends AbstractModel
         'created_at' => 'datetime',
         'updated_at' => 'datetime',
         'end_date'   => 'datetime',
+        'price' => 'integer',
+        'amount' => 'integer',
+        'min_participants' => 'integer',
+        'max_participants' => 'integer',
+        'enter_count' => 'integer',
+        'status' => 'integer',
+        'can_cancel_enter' => 'boolean',
     ];
-    public $fillable = [
-        'enter_count','status',
+
+    protected $fillable = [
+        'enter_count',
+        'status',
     ];
-    public static function build($prizes, $postId, $actorId, $endDate, $price, $amount, $min_participants=0, $max_participants=999999,$can_cancel_enter = false)
+
+    public static function build(
+        $prizes,
+        $postId,
+        $actorId,
+        $endDate,
+        $price,
+        $amount,
+        $min_participants = 0,
+        $max_participants = 999999,
+        $can_cancel_enter = false
+    )
     {
         $lottery = new static();
 
@@ -49,7 +69,9 @@ class Lottery extends AbstractModel
 
         $lottery->min_participants = $min_participants;
         $lottery->max_participants = $max_participants;
-        $lottery->can_cancel_enter= $can_cancel_enter;
+        $lottery->can_cancel_enter = $can_cancel_enter;
+        $lottery->status = 0;
+        $lottery->enter_count = 0;
 
         return $lottery;
     }
@@ -96,18 +118,26 @@ class Lottery extends AbstractModel
 
     public function refreshParticipantsCount(): self
     {
-        $this->participants_count = $this->participants()->count();
+        $this->enter_count = $this->participants()->count();
 
         return $this;
     }
 
     protected static $stateUser;
 
-    public function lottery_participants(User $user = null)
+    public function lotteryParticipants(User $user = null)
     {
         $user = $user ?: static::$stateUser;
 
         return $this->participants()->where('user_id', $user ? $user->id : null);
+    }
+
+    /**
+     * Legacy relation name retained for integrations that still reference it.
+     */
+    public function lottery_participants(User $user = null)
+    {
+        return $this->lotteryParticipants($user);
     }
 
     public static function setStateUser(User $user)

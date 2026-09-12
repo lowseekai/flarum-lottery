@@ -28,7 +28,7 @@ class PostPolicy extends AbstractPolicy
         // Only allow lottery to be started if the user can start lottery in the discussion
         // and if the user can either edit the post or is currently creating a new post.
         // For example, actors cannot 'edit' a post they're currently creating if post editing is allowed until next reply.
-        if ($actor->can('lottery.start', $post->discussion) && (!$post->exists || $actor->can('edit', $post))) {
+        if ($actor->can('discussion.lottery.start', $post->discussion) && (!$post->exists || $actor->can('edit', $post))) {
             return $this->allow();
         }
     }

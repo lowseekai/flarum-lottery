@@ -1,14 +1,14 @@
 {
     "name": "nodeloc/lottery",
-    "description": " A Flarum extension that adds lottery to your discussions",
+    "description": "A Flarum 2 extension that adds point-based lotteries to discussions",
     "keywords": [
         "flarum"
     ],
     "type": "flarum-extension",
     "license": "MIT",
     "support": {
-        "issues": "https://github.com/nodeloc/lottery/issues",
-        "source": "https://github.com/nodeloc/lottery"
+        "issues": "https://github.com/lowseekai/flarum-lottery/issues",
+        "source": "https://github.com/lowseekai/flarum-lottery"
     },
     "homepage": "https://www.nodeloc.com",
     "funding": [
@@ -18,15 +18,20 @@
         }
     ],
     "require": {
-        "flarum/core": "^1.3.0",
-        "antoinefr/flarum-ext-money": "^1.3.0",
-        "mattoid/flarum-ext-money-history": "^1.1.1"
+        "flarum/core": "^2.0.0-rc.8",
+        "ramon/point-system": "dev-main"
     },
     "authors": [
         {
             "name": "James",
             "email": "james@nodeloc.com",
             "role": "Developer"
+        }
+    ],
+    "repositories": [
+        {
+            "type": "vcs",
+            "url": "https://github.com/lowseekai/point-system"
         }
     ],
     "autoload": {

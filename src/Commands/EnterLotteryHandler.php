@@ -11,208 +11,173 @@
 
 namespace Nodeloc\Lottery\Commands;
 
-use Flarum\Foundation\ErrorHandling\Reporter;
+use DomainException;
 use Flarum\Foundation\ValidationException;
-use Flarum\Settings\SettingsRepositoryInterface;
-use Flarum\User\Exception\PermissionDeniedException;
+use Flarum\Locale\TranslatorInterface;
 use Flarum\User\User;
-use Nodeloc\Lottery\Events\LotteryCancelEnter;
+use Illuminate\Contracts\Events\Dispatcher;
+use Illuminate\Database\ConnectionResolverInterface;
 use Nodeloc\Lottery\Events\LotteryWasEntered;
 use Nodeloc\Lottery\Lottery;
 use Nodeloc\Lottery\LotteryRepository;
-use Illuminate\Contracts\Container\Container;
-use Illuminate\Contracts\Events\Dispatcher;
-use Illuminate\Database\ConnectionResolverInterface;
-use Illuminate\Support\Arr;
-use Illuminate\Validation\Factory;
-use Pusher;
-use Symfony\Contracts\Translation\TranslatorInterface;
+use Ramon\PointSystem\Repository\PointsRepository;
 
 class EnterLotteryHandler
 {
-    /**
-     * @var Dispatcher
-     */
-    private $events;
-
-    /**
-     * @var SettingsRepositoryInterface
-     */
-    private $settings;
-
-    /**
-     * @var Container
-     */
-    private $container;
-
-    /**
-     * @var Factory
-     */
-    private $validation;
-
-    private $translator;
-
-    /**
-     * @var ConnectionResolverInterface
-     */
-    private $db;
-
-    /**
-     * @var LotteryRepository
-     */
-    private $lottery;
-
-    /**
-     * @param Dispatcher $events
-     * @param SettingsRepositoryInterface $settings
-     * @param Container $container
-     */
-    public function __construct(LotteryRepository $lottery, Dispatcher $events, SettingsRepositoryInterface $settings, Container $container, Factory $validation, ConnectionResolverInterface $db)
-    {
-        $this->lottery = $lottery;
-        $this->events = $events;
-        $this->settings = $settings;
-        $this->container = $container;
-        $this->validation = $validation;
-        $this->translator = resolve(TranslatorInterface::class);
-        $this->db = $db;
+    public function __construct(
+        protected LotteryRepository $lottery,
+        protected Dispatcher $events,
+        protected ConnectionResolverInterface $db,
+        protected PointsRepository $points,
+        protected TranslatorInterface $translator,
+    ) {
     }
 
     /**
-     * @throws PermissionDeniedException
      * @throws ValidationException
      */
-    public function handle(EnterLottery $command)
+    public function handle(EnterLottery $command): Lottery
     {
         $actor = $command->actor;
-
         $lottery = $this->lottery->findOrFail($command->lotteryId, $actor);
 
         $actor->assertCan('enter', $lottery);
 
-        //已参与抽奖
-        $existingParticipant = $lottery->participants()
-            ->where('user_id', $actor->id)
-            ->first();
-        if ($existingParticipant) {
+        if ($lottery->participants()->where('user_id', $actor->id)->exists()) {
             throw new ValidationException([
                 'lottery' => $this->translator->trans('nodeloc-lottery.forum.composer_discussion.in_queue_alert'),
             ]);
         }
 
-        // 检查用户是否在对应主题回帖
         $discussionId = $lottery->post->discussion_id;
         $userPostedInDiscussion = $actor->posts()
             ->where('discussion_id', $discussionId)
             ->exists();
 
-        if (!$userPostedInDiscussion) {
+        if (! $userPostedInDiscussion) {
             throw new ValidationException([
                 'lottery' => $this->translator->trans('nodeloc-lottery.forum.composer_discussion.no_post_in_discussion_alert'),
             ]);
         }
 
-        if($lottery->getAttribute('enter_count')>=$lottery->getAttribute('max_participants')){
+        $maxParticipants = (int) ($lottery->max_participants ?: 999999);
+        if ((int) $lottery->enter_count >= $maxParticipants) {
             throw new ValidationException([
                 'lottery' => $this->translator->trans('nodeloc-lottery.forum.too_many_participants'),
             ]);
         }
 
-        // 检查用户是否满足条件
-        if (!$this->userMeetsConditions($actor, $lottery)) {
+        $this->userMeetsConditions($actor, $lottery);
+
+        $price = max(0, (int) $lottery->price);
+        if ($price > $this->points->getOrCreate($actor)->balance) {
             throw new ValidationException([
-                'lottery' => $this->translator->trans('nodeloc-lottery.forum.composer_discussion.no_permission_alert'),
+                'lottery' => $this->translator->trans('nodeloc-lottery.forum.modal.not_enough').' '
+                    .$this->translator->trans('nodeloc-lottery.forum.modal.points'),
             ]);
         }
 
-        if($lottery->getAttribute('price') > $actor->getAttribute('money')){
+        try {
+            $this->db->connection()->transaction(function () use ($lottery, $actor, $price): void {
+                $lottery = Lottery::query()
+                    ->whereKey($lottery->id)
+                    ->lockForUpdate()
+                    ->firstOrFail();
+
+                if ($lottery->hasEnded()) {
+                    throw new ValidationException([
+                        'lottery' => $this->translator->trans('nodeloc-lottery.forum.lottery_ended'),
+                    ]);
+                }
+
+                if ($lottery->participants()->where('user_id', $actor->id)->exists()) {
+                    throw new ValidationException([
+                        'lottery' => $this->translator->trans('nodeloc-lottery.forum.composer_discussion.in_queue_alert'),
+                    ]);
+                }
+
+                $maxParticipants = (int) ($lottery->max_participants ?: 999999);
+                if ((int) $lottery->enter_count >= $maxParticipants) {
+                    throw new ValidationException([
+                        'lottery' => $this->translator->trans('nodeloc-lottery.forum.too_many_participants'),
+                    ]);
+                }
+
+                if ($price > 0) {
+                    $this->points->deduct(
+                        $actor,
+                        $price,
+                        'lottery.entry',
+                        'lottery',
+                        (int) $lottery->id
+                    );
+                }
+
+                $participant = $lottery->participants()->create([
+                    'user_id' => $actor->id,
+                    'status' => 0,
+                ]);
+
+                $this->events->dispatch(new LotteryWasEntered($actor, $lottery, $participant));
+                $lottery->increment('enter_count');
+            });
+        } catch (DomainException) {
             throw new ValidationException([
-                'lottery' => $this->translator->trans("nodeloc-lottery.forum.modal.not_enough").' '.$this->translator->trans("nodeloc-lottery.forum.modal.money"),
+                'lottery' => $this->translator->trans('nodeloc-lottery.forum.modal.not_enough').' '
+                    .$this->translator->trans('nodeloc-lottery.forum.modal.points'),
             ]);
         }
 
-        $this->db->transaction(function () use ($lottery, $actor) {
-    // ✅ 这里是修改的部分：明确从用户余额中减去抽奖价格，然后保存
-    $price = $lottery->getAttribute('price');
-    $actor->money = $actor->money - $price; // 扣除金额
-    $actor->save(); // 保存到数据库
-
-    // ✅ 创建参与记录
-    $participants = $lottery->participants()->create([
-        'user_id' => $actor->id,
-    ]);
-
-    // ✅ 触发已参与事件（兼容旧版逻辑）
-    $this->events->dispatch(new LotteryWasEntered($actor, $lottery, $participants));
-
-    // ✅ 抽奖参与人数 +1
-    $lottery->increment('enter_count');
-});
-
-
-        return $lottery;
+        return $lottery->fresh(['options', 'participants', 'post', 'user']);
     }
-    // 辅助方法，用于检查用户是否满足条件
-    protected function userMeetsConditions(User $user, $lottery)
+
+    protected function userMeetsConditions(User $user, Lottery $lottery): void
     {
-        $conditions = $lottery->options;
-        foreach ($conditions as $condition) {
+        foreach ($lottery->options as $condition) {
             $this->checkCondition($user, $condition);
         }
-        return true;
     }
 
-    protected function checkCondition(User $user, $condition)
+    protected function checkCondition(User $user, object $condition): void
     {
-        $value = $this->getConditionValue($user, $condition['operator_type']);
-        $operator = $condition['operator'];
-        $threshold = $condition['operator_value'];
+        $operatorType = (string) $condition->getAttribute('operator_type');
+        $value = $this->getConditionValue($user, $operatorType);
+        $operator = (int) $condition->getAttribute('operator');
+        $threshold = (int) $condition->getAttribute('operator_value');
 
-        if (!$this->meetsCondition($value, $operator, $threshold)) {
-            $errorMessageKey = "nodeloc-lottery.forum.modal.{$condition['operator_type']}";
+        if (! $this->meetsCondition($value, $operator, $threshold)) {
+            $errorMessageKey = "nodeloc-lottery.forum.modal.$operatorType";
+
             throw new ValidationException([
-                'lottery' => $this->translator->trans("nodeloc-lottery.forum.modal.not_enough").' '.$this->translator->trans($errorMessageKey),
+                'lottery' => $this->translator->trans('nodeloc-lottery.forum.modal.not_enough').' '
+                    .$this->translator->trans($errorMessageKey),
             ]);
         }
     }
 
-    protected function getConditionValue(User $user, $operatorType)
+    protected function getConditionValue(User $user, string $operatorType): int
     {
-        switch ($operatorType) {
-            case 'discussions_started':
-                return $user->discussions()->where('is_private', false)
-                    ->count();
-            case 'posts_made':
-                return $user->posts()
-                    ->where('type', 'comment')
-                    ->where('is_private', false)
-                    ->count();
-            case 'money':
-                return $user->getAttribute('money');
-            case 'lotteries_made':
-                return Lottery::where('user_id', $user->id)->count();
-            case 'read_permission':
-                if($user->groups()->count() > 0)
-                {
-                    $group = $user->groups()->orderBy('read_permission','desc')->first();
-                    return $group->read_permission;
-                }else{
-                    return 0;
-                }
-            default:
-                return 0; // 默认情况下为零
-        }
+        return match ($operatorType) {
+            'discussions_started' => $user->discussions()
+                ->where('is_private', false)
+                ->count(),
+            'posts_made' => $user->posts()
+                ->where('type', 'comment')
+                ->where('is_private', false)
+                ->count(),
+            // "money" is retained as a read-only compatibility alias for
+            // old lottery rows. It now reads the Point System balance.
+            'points', 'money' => $this->points->getOrCreate($user)->balance,
+            'lotteries_made' => Lottery::where('user_id', $user->id)->count(),
+            'read_permission' => $user->groups()->count() > 0
+                ? (int) $user->groups()->orderByDesc('read_permission')->first()->read_permission
+                : 0,
+            default => 0,
+        };
     }
 
-    protected function meetsCondition($count, $operator, $value)
+    protected function meetsCondition(int $count, int $operator, int $value): bool
     {
-        switch ($operator) {
-            case '0':
-                return $count <= $value;
-            case '1':
-                return $count >= $value;
-            default:
-                return true; // 默认情况下条件是满足的
-        }
+        return $operator === 0 ? $count <= $value : $count >= $value;
     }
 }

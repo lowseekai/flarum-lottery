@@ -19,7 +19,9 @@ class ClearFormatterCache
     {
         foreach ($event->settings as $key => $value) {
             if ($key === 'nodeloc-lottery.optionsColorBlend') {
-                resolve('nodeloc-user-bio.formatter')->flush();
+                if (function_exists('app') && app()->bound('nodeloc-user-bio.formatter')) {
+                    resolve('nodeloc-user-bio.formatter')->flush();
+                }
                 return;
             }
         }

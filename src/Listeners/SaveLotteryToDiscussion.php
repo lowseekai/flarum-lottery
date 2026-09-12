@@ -20,7 +20,7 @@ class SaveLotteryToDiscussion
      */
     public function handle(Saving $event)
     {
-        if (isset($event->data['attributes']['lottery'])) {
+        if (isset($event->data['attributes']['lotteryData'])) {
             $discussion = $event->discussion;
             $discussion->is_lottery = true;
         }

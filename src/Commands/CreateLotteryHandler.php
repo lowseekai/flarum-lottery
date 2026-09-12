@@ -74,9 +74,9 @@ class CreateLotteryHandler
         if (is_array($rawOptionsData)) {
             foreach ($rawOptionsData as $rawOptionData) {
                 $optionsData[] = [
-                    'operator_type'   => Arr::get($rawOptionData, 'operator_type'),
+                    'operator_type' => Arr::get($rawOptionData, 'operatorType', Arr::get($rawOptionData, 'operator_type')),
                     'operator' => Arr::get($rawOptionData, 'operator'),
-                    'operator_value' => Arr::get($rawOptionData, 'operator_value'),
+                    'operator_value' => Arr::get($rawOptionData, 'operatorValue', Arr::get($rawOptionData, 'operator_value')),
                 ];
             }
         }
@@ -90,10 +90,14 @@ class CreateLotteryHandler
         }
         return ($command->saveLotteryOn)(function () use ($optionsData, $attributes, $command) {
             $endDate = Arr::get($attributes, 'endDate');
-            $carbonDate = Carbon::parse($endDate);
+            $carbonDate = null;
 
-            if (!$carbonDate->isFuture()) {
-                $carbonDate = null;
+            if (is_string($endDate) && trim($endDate) !== '') {
+                $parsedDate = Carbon::parse($endDate);
+
+                if ($parsedDate->isFuture()) {
+                    $carbonDate = $parsedDate;
+                }
             }
 
             $lottery = Lottery::build(
@@ -101,11 +105,16 @@ class CreateLotteryHandler
                 $command->post->id,
                 $command->actor->id,
                 $carbonDate != null ? $carbonDate->setTimezone('Asia/Shanghai') : null,
-                Arr::get($attributes, 'price'),
-                Arr::get($attributes, 'amount'),
-                Arr::get($attributes, 'min_participants'),
-                Arr::get($attributes, 'max_participants'),
-                Arr::get($attributes, 'can_cancel_enter'),
+                (int) Arr::get($attributes, 'price', 0),
+                (int) Arr::get($attributes, 'amount', 0),
+                (int) Arr::get($attributes, 'minParticipants', Arr::get($attributes, 'min_participants', 0)),
+                (int) Arr::get($attributes, 'maxParticipants', Arr::get($attributes, 'max_participants', 999999)),
+                (bool) (
+                    Arr::get($attributes, 'allowCancelEnter')
+                    ?? Arr::get($attributes, 'allow_cancel_enter')
+                    ?? Arr::get($attributes, 'can_cancel_enter')
+                    ?? false
+                ),
             );
 
             $this->events->dispatch(new SavingLotteryAttributes($command->actor, $lottery, $attributes, $attributes));
@@ -115,7 +124,11 @@ class CreateLotteryHandler
             $this->events->dispatch(new LotteryWasCreated($command->actor, $lottery));
 
             foreach ($optionsData as $optionData) {
-                $option = LotteryOption::build(Arr::get($optionData, 'operator_type'), Arr::get($optionData, 'operator'),Arr::get($optionData, 'operator_value'));
+                $option = LotteryOption::build(
+                    Arr::get($optionData, 'operator_type'),
+                    Arr::get($optionData, 'operator'),
+                    Arr::get($optionData, 'operator_value')
+                );
                 $lottery->options()->save($option);
             }
 

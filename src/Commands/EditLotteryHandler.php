@@ -77,11 +77,20 @@ class EditLotteryHandler
         if (isset($attributes['amount'])) {
             $lottery->amount = $attributes['amount'];
         }
-        if (isset($attributes['min_participants'])) {
-            $lottery->min_participants = $attributes['min_participants'];
+        if (array_key_exists('minParticipants', $attributes) || array_key_exists('min_participants', $attributes)) {
+            $lottery->min_participants = $attributes['minParticipants'] ?? $attributes['min_participants'];
         }
-        if (isset($attributes['max_participants'])) {
-            $lottery->max_participants = $attributes['max_participants'];
+        if (array_key_exists('maxParticipants', $attributes) || array_key_exists('max_participants', $attributes)) {
+            $lottery->max_participants = $attributes['maxParticipants'] ?? $attributes['max_participants'];
+        }
+        if (array_key_exists('allowCancelEnter', $attributes)
+            || array_key_exists('allow_cancel_enter', $attributes)
+            || array_key_exists('can_cancel_enter', $attributes)) {
+            $lottery->can_cancel_enter = (bool) (
+                $attributes['allowCancelEnter']
+                ?? $attributes['allow_cancel_enter']
+                ?? $attributes['can_cancel_enter']
+            );
         }
 
         if (isset($attributes['endDate'])) {
@@ -113,9 +122,9 @@ class EditLotteryHandler
             $id = Arr::get($opt, 'id');
 
             $optionAttributes = [
-                'operator_type'   => Arr::get($opt, 'attributes.operator_type'),
+                'operator_type' => Arr::get($opt, 'attributes.operatorType', Arr::get($opt, 'attributes.operator_type')),
                 'operator' => Arr::get($opt, 'attributes.operator'),
-                'operator_value' => Arr::get($opt, 'attributes.operator_value'),
+                'operator_value' => Arr::get($opt, 'attributes.operatorValue', Arr::get($opt, 'attributes.operator_value')),
             ];
 
             $this->optionValidator->assertValid($optionAttributes);

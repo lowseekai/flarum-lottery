@@ -74,7 +74,8 @@ nodeloc-lottery:
       likes_received: Likes received
       best_answers: Best answers
       moderator_strikes: Moderator strikes
-      money: Money
+      points: Points
+      money: Points
       lotteries_made: Lotteries started
       not_enough: Not enough
       read_permission: Permission
@@ -124,10 +125,3 @@ nodeloc-lottery:
         Visit the discussion here: {discussion_url}, and finish the lottery.
 
         Thanks!
-
-antoinefr-money:
-  forum:
-    history:
-      lottery-fee: lottery-fee
-      lottery-in: lottery-in
-      lottery-fee-return: lottery-fee-return

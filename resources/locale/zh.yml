@@ -1,135 +1,127 @@
 nodeloc-lottery:
   admin:
     settings:
-      allow_option_image: Allow an image URL to be provided for each lottery option
-      max_options: Maximum number of options per lottery
-      options_color_blend: Color blend text in lottery options
-      options_color_blend_help: Use this to use color mixing to make the lottery options more readable. Disable if this feature causes issues with your forum's appearance, reducing readability.
+      allow_option_image: 允许为每个抽奖条件填写图片地址
+      max_options: 每个抽奖最多允许的条件数量
+      options_color_blend: 自动调整条件文字颜色
+      options_color_blend_help: 使用颜色混合提升条件文字的可读性。如果与论坛主题冲突或降低可读性，可以关闭此选项。
     permissions:
-      seeParticipants: View results without voting
-      start: Start a lottery
-      self_edit: Edit created lotterys (requires post edit permission)
-      self_post_edit: Edit *all* lotterys on own posts (requires post edit permission)
-      enter:  Can enter a lottery
-      canCancelEnter: Can Change enter
-      moderate: Edit & remove lotterys
+      seeParticipants: 查看抽奖参与者
+      start: 发起抽奖
+      self_edit: 编辑自己发起的抽奖（需要帖子编辑权限）
+      self_post_edit: 编辑自己帖子中的所有抽奖（需要帖子编辑权限）
+      enter: 允许参与抽奖
+      canCancelEnter: 允许取消参与抽奖
+      moderate: 编辑和删除抽奖
 
   forum:
-    days_remaining: 于 {time} 后开奖.
-    no_permission: 你无权参与
-    lottery_ended: 抽奖已结束
+    days_remaining: 抽奖将在 {time} 后结束。
+    no_permission: 你没有参与此抽奖的权限。
+    lottery_ended: 此抽奖已经结束。
     public_lottery: 查看参与者
-    max_votes_allowed: "lottery allows voting for {max, plural, one {# option} other {# options}}."
-    widget-title: 抽奖结果揭晓于...
-    days: Days
-    hours: Hours
-    minutes: Minutes
-    seconds: Seconds
-    endDateText: 抽奖已结束
-    hurry_up: 好事将近!! 距离开奖还有...
-    had_enter: 您已经参与此活动.
-    too_many_participants: 人数爆满，没有名额了
+    max_votes_allowed: "此抽奖最多允许选择 {max, plural, one {# 个条件} other {# 个条件}}。"
+    widget-title: 抽奖即将开始
+    days: 天
+    hours: 小时
+    minutes: 分钟
+    seconds: 秒
+    endDateText: 抽奖已结束！
+    hurry_up: 抽奖即将开始
+    had_enter: 你已经参与过此抽奖。
+    too_many_participants: 参与人数已达到上限。
+    participants_progress: 当前 {current} 人 / 最少 {minimum} 人
 
     lottery:
-      cannot_cancel_lottery: 用户无法取消参与
-      submit_button: 点此抽奖
+      cannot_cancel_lottery: 用户不能取消参与。
+      submit_button: 参与抽奖
 
     composer_discussion:
       add_lottery: => nodeloc-lottery.forum.moderation.add
       edit_lottery: => nodeloc-lottery.forum.moderation.edit
-      no_permission_alert: 您无权发布抽奖帖.
-      in_queue_alert: 您已经参与了此抽奖.
-      no_post_in_discussion_alert: 参与抽奖请先回复主题答谢抽奖发起者.
+      no_permission_alert: 你没有发起抽奖的权限。
+      in_queue_alert: 你已经参与过此抽奖。
+      no_post_in_discussion_alert: 请先在主题中回复后再参与抽奖。
 
     modal:
-      add_title: 发布抽奖
-      lottery_placeholder: 奖品
-      price: 薯条消耗
-      amount: 奖品数量
+      add_title: 发起抽奖
+      lottery_placeholder: 奖品名称
+      price: 参与积分
+      points: 积分
+      amount: 中奖名额
       min_participants: 最少人数
       max_participants: 最多人数
-      add_option_label: Add an Option
+      add_option_label: 添加条件
       date_placeholder: 开奖时间
       edit_title: 编辑抽奖
-      include_prizes: 奖品名称必须要填写
-      include_price: 费用必须要填写
-      include_amount: 数量必须要填写
-      include_end_date: 开奖时间必须要填写
-      max: You can have a maximum of {max} answers
-      min: You must include a minimum of 2 answers
-      no_participants: 暂无参与者或者您无权查看
-      option_placeholder: 数量
-      image_option_placeholder: Image URL (optional)
-      options_label: 限制条件
-      public_lottery_label: Allow people to see who voted
-      allow_multiple_votes_label: Allow people to enter for multiple options
-      participants_label: 参与者
-      participants_help: 不足最低抽奖取消，超过最多不能参与
-      hide_votes_label: Hide votes until lottery ends
+      include_prizes: 请填写奖品名称。
+      include_price: 请填写参与积分。
+      include_amount: 请填写中奖名额。
+      include_end_date: 请设置开奖时间。
+      max: 最多只能添加 {max} 个条件。
+      min: 至少需要添加 1 个条件。
+      no_participants: 暂无参与者，或你没有查看参与者的权限。
+      option_placeholder: 阈值
+      image_option_placeholder: 图片地址（可选）
+      options_label: 参与条件
+      public_lottery_label: 允许查看参与者
+      allow_multiple_votes_label: 允许用户选择多个条件
+      participants_label: 参与人数
+      participants_help: 可设置最少和最多参与人数。
+      hide_votes_label: 抽奖结束前隐藏参与者
       allow_cancel_enter_label: 允许用户取消参与
-      submit: 提交
-      discussions_started: 主题数量
-      posts_made: 回复数量
-      likes_given: 给出的赞
-      likes_received: 收到的赞
+      submit: 保存
+      discussions_started: 发起主题数
+      posts_made: 回复数
+      likes_given: 点赞数
+      likes_received: 获得点赞数
       best_answers: 最佳答案数
-      moderator_strikes: Moderator strikes
-      money: 薯条
-      lotteries_made: 抽奖帖数
-      not_enough: 不足
-      read_permission: 权限
-
+      moderator_strikes: 违规记录数
+      money: 积分
+      lotteries_made: 发起抽奖数
+      not_enough: 条件不足
+      read_permission: 访问权限
 
     moderation:
-      add: 添加奖品
-      delete: 移除奖品
-      delete_confirm: 你确认要删除奖品么？
-      edit: 编辑奖品
+      add: 添加抽奖
+      delete: 删除抽奖
+      delete_confirm: 确定要删除这个抽奖吗？
+      edit: 编辑抽奖
 
     tooltip:
       badge: 抽奖
-      votes: "{count, plural, one {# enter} other {# votes}}"
+      votes: "{count, plural, one {# 人参与} other {# 人参与}}"
 
     participants_modal:
       title: 参与者
       title_winners: 中奖者
-      lottery_canceled: 参与人数不足抽奖取消！
+      lottery_canceled: 因参与人数不足，抽奖已取消。
 
     notification:
-      drawLottery: 恭喜您中奖了！请联系抽奖发起者索取奖品.
-      fail: 很抱歉，因人数不足抽奖以失败而告终.
-      finish: 抽奖活动圆满成功，请联系中奖者发送奖品。
+      drawLottery: 恭喜你在抽奖中中奖！
+      fail: 很遗憾，抽奖因参与人数不足而取消。
+      finish: 抽奖已开奖，请联系中奖者发放奖品。
 
   email:
     subject:
-      drawLottery: 抽奖通知 {discussion_title}
+      drawLottery: 抽奖结果通知：{discussion_title}
     body:
       drawLottery: |
-        你好 {recipient_display_name},
+        你好，{recipient_display_name}：
 
-        恭喜您中奖了！ {discussion_title} 来自 {actor_display_name} .
+        恭喜你在「{discussion_title}」中中奖，抽奖发起人为 {actor_display_name}。
 
-        访问链接查看详情: {discussion_url} .
-
-        请联系 {actor_display_name} 领取您的奖品.
+        查看主题：{discussion_url}
       fail: |
-        您好 {recipient_display_name},
+        你好，{recipient_display_name}：
 
-        很抱歉，您发起的抽奖 {discussion_title} 由于人数不足而取消.
+        很遗憾，「{discussion_title}」因参与人数不足而取消。
 
-        详情请查看: {discussion_url}
+        查看主题：{discussion_url}
       finish: |
-        您好 {recipient_display_name},
+        你好，{recipient_display_name}：
 
-        恭喜您! 您发起的抽奖 {discussion_title} 圆满成功！
+        「{discussion_title}」已经成功开奖。
 
-        访问: {discussion_url} 给幸运儿们发放奖品吧.
+        查看主题：{discussion_url}
 
-        诚挚感谢!
-
-antoinefr-money:
-  forum:
-    history:
-      lottery-fee: 抽奖参与费用
-      lottery-in: 抽奖赚取费用
-      lottery-fee-return: 抽奖流抽费用返还
+        谢谢！
