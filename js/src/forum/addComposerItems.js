@@ -68,7 +68,7 @@ export const addToComposer = (composer = discussionComposer) => {
 function syncLotteryPreview(textEditor) {
   const composer = textEditor.attrs.composer;
   const mentionsWrapper = textEditor.$('.ComposerBody-mentionsWrapper')[0];
-  const composerElement = textEditor.element?.closest('.Composer');
+  const composerElement = mentionsWrapper?.closest('.Composer');
 
   if (!composer || !mentionsWrapper) {
     return;
@@ -92,13 +92,18 @@ function syncLotteryPreview(textEditor) {
   if (!mount) {
     mount = document.createElement('div');
     mount.className = 'LotteryPreview-composerMount';
-    const editorWrapper = mentionsWrapper.querySelector('.ComposerBody-emojiWrapper');
+  }
 
-    if (editorWrapper) {
-      mentionsWrapper.insertBefore(mount, editorWrapper);
-    } else {
-      mentionsWrapper.appendChild(mount);
-    }
+  const editorWrapper = mentionsWrapper.querySelector('.ComposerBody-emojiWrapper');
+
+  if (editorWrapper && mount.nextElementSibling !== editorWrapper) {
+    mentionsWrapper.insertBefore(mount, editorWrapper);
+  } else if (!editorWrapper && !mount.parentElement) {
+    mentionsWrapper.appendChild(mount);
+  }
+
+  if (!mount.parentElement) {
+    mentionsWrapper.appendChild(mount);
   }
 
   m.render(mount, <LotteryPreview lottery={composer.fields.lottery} />);
@@ -119,7 +124,7 @@ export const addComposerLotteryPreview = () => {
 
   extend(TextEditor.prototype, 'onremove', function () {
     const mount = this.$('.LotteryPreview-composerMount')[0];
-    const composerElement = this.element?.closest('.Composer');
+    const composerElement = mount?.closest('.Composer');
 
     composerElement?.classList.remove('has-lottery-preview');
 
