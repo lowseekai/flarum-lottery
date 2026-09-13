@@ -19,7 +19,7 @@ use Illuminate\Validation\Rule;
 
 class LotteryValidator extends AbstractValidator
 {
-    protected function getRules()
+    protected function getRules(): array
     {
         return [
             'prizes'   => 'required',

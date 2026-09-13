@@ -16,7 +16,7 @@ use Illuminate\Validation\Rule;
 
 class LotteryOptionValidator extends AbstractValidator
 {
-    protected function getRules()
+    protected function getRules(): array
     {
         return [
             'operator_type'   => [
