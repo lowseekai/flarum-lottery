@@ -2,7 +2,7 @@
 import app from 'flarum/admin/app';
 
 app.initializers.add('nodeloc/lottery', () => {
-  app.extensionData
+  app.registry
     .for('nodeloc-lottery')
     .registerSetting({
       setting: 'nodeloc-lottery.allowOptionImage',
