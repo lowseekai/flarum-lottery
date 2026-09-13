@@ -31,11 +31,7 @@ export default class PostLottery extends Component {
           <h3 className="LotteryHeading-title">{lottery.prizes()}</h3>
           {lottery.canSeeParticipants() && (
             <Tooltip text={app.translator.trans('nodeloc-lottery.forum.public_lottery')}>
-              <Button
-                className="Button LotteryHeading-voters"
-                onclick={this.showparticipants.bind(this)}
-                icon="fas fa-user"
-              />
+              <Button className="Button LotteryHeading-voters" onclick={this.showparticipants.bind(this)} icon="fas fa-user" />
             </Tooltip>
           )}
           {lottery.canEdit() && (
@@ -49,11 +45,7 @@ export default class PostLottery extends Component {
           )}
           {lottery.canDelete() && (
             <Tooltip text={app.translator.trans('nodeloc-lottery.forum.moderation.delete')}>
-              <Button
-                className="Button LotteryHeading-delete"
-                onclick={this.deleteLottery.bind(this)}
-                icon="fas fa-trash"
-              />
+              <Button className="Button LotteryHeading-delete" onclick={this.deleteLottery.bind(this)} icon="fas fa-trash" />
             </Tooltip>
           )}
         </div>
@@ -67,17 +59,13 @@ export default class PostLottery extends Component {
               <span>{lottery.price()}</span>
               {minParticipants !== 0 && (
                 <>
-                  <span className="min_participants">
-                    {app.translator.trans('nodeloc-lottery.forum.modal.min_participants')}
-                  </span>
+                  <span className="min_participants">{app.translator.trans('nodeloc-lottery.forum.modal.min_participants')}</span>
                   <span>{minParticipants}</span>
                 </>
               )}
               {maxParticipants < 999999 && (
                 <>
-                  <span className="max_participants">
-                    {app.translator.trans('nodeloc-lottery.forum.modal.max_participants')}
-                  </span>
+                  <span className="max_participants">{app.translator.trans('nodeloc-lottery.forum.modal.max_participants')}</span>
                   <span>{maxParticipants}</span>
                 </>
               )}
@@ -106,8 +94,7 @@ export default class PostLottery extends Component {
                 ),
               ])}
             <h2>
-              <i className="fas fa-info-circle fontawicon" />{' '}
-              {app.translator.trans('nodeloc-lottery.forum.modal.options_label')}
+              <i className="fas fa-info-circle fontawicon" /> {app.translator.trans('nodeloc-lottery.forum.modal.options_label')}
             </h2>
             <ul>{options.map(this.viewOption.bind(this))}</ul>
           </div>
@@ -115,11 +102,7 @@ export default class PostLottery extends Component {
           <div className="Lottery-sticky">
             {!infoItems.isEmpty() && <div className="helpText LotteryInfoText">{infoItems.toArray()}</div>}
             {!hasEntered && !lottery.hasEnded() && lottery.canEnter() && (
-              <Button
-                className="Button Button--primary Lottery-submit"
-                loading={this.loadingOptions}
-                onclick={this.onsubmit.bind(this)}
-              >
+              <Button className="Button Button--primary Lottery-submit" loading={this.loadingOptions} onclick={this.onsubmit.bind(this)}>
                 {app.translator.trans('nodeloc-lottery.forum.lottery.submit_button')}
               </Button>
             )}
@@ -175,6 +158,7 @@ export default class PostLottery extends Component {
     discussions_started: app.translator.trans('nodeloc-lottery.forum.modal.discussions_started'),
     posts_made: app.translator.trans('nodeloc-lottery.forum.modal.posts_made'),
     points: app.translator.trans('nodeloc-lottery.forum.modal.points'),
+    // Keep labels for lotteries created before these conditions were removed.
     lotteries_made: app.translator.trans('nodeloc-lottery.forum.modal.lotteries_made'),
     read_permission: app.translator.trans('nodeloc-lottery.forum.modal.read_permission'),
   };
@@ -183,7 +167,11 @@ export default class PostLottery extends Component {
     const operatorText = this.selectOptions[option.operatorType()] || '';
     const operatorSymbol = option.operator() === 0 ? '<=' : '>=';
 
-    return <li key={option.data.id}>{operatorText} {operatorSymbol} {option.operatorValue()}</li>;
+    return (
+      <li key={option.data.id}>
+        {operatorText} {operatorSymbol} {option.operatorValue()}
+      </li>
+    );
   }
 
   onsubmit() {

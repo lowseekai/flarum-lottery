@@ -12,6 +12,7 @@
 namespace Nodeloc\Lottery\Listeners;
 
 use Flarum\Discussion\Event\Saving;
+use Nodeloc\Lottery\LotteryTitle;
 
 class SaveLotteryToDiscussion
 {
@@ -23,6 +24,7 @@ class SaveLotteryToDiscussion
         if (isset($event->data['attributes']['lotteryData'])) {
             $discussion = $event->discussion;
             $discussion->is_lottery = true;
+            $discussion->title = LotteryTitle::active($discussion->title);
         }
     }
 }

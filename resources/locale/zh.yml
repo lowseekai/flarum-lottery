@@ -48,10 +48,14 @@ nodeloc-lottery:
       price: 参与积分
       points: 积分
       amount: 中奖名额
+      prizes_help: 展示在抽奖卡片中的奖品名称，建议填写清晰具体的内容。
+      price_help: 每位参与者需要支付的积分；抽奖成功后归发起人，因人数不足取消时自动退回。
+      amount_help: 抽奖结束后随机产生的中奖人数，建议不要超过预计参与人数。
       min_participants: 最少人数
       max_participants: 最多人数
       add_option_label: 添加条件
       date_placeholder: 开奖时间
+      date_help: 必须设置在当前时间之后，且最晚不能超过 3 天；到时间后由系统自动开奖。
       edit_title: 编辑抽奖
       include_prizes: 请填写奖品名称。
       include_price: 请填写参与积分。
@@ -59,6 +63,8 @@ nodeloc-lottery:
       include_end_date: 请设置开奖时间。
       max: 最多只能添加 {max} 个条件。
       min: 至少需要添加 1 个条件。
+      remove_option: 删除此条件
+      end_date_too_far: 开奖时间不能超过当前时间后的 3 天。
       no_participants: 暂无参与者，或你没有查看参与者的权限。
       option_placeholder: 阈值
       image_option_placeholder: 图片地址（可选）
