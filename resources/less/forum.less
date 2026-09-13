@@ -130,6 +130,55 @@
   }
 }
 
+// Keep the lottery preview inside the fixed composer without pushing the toolbar out of view.
+.Composer.has-lottery-preview:not(.fullScreen) {
+  .Composer-content {
+    height: 100%;
+    box-sizing: border-box;
+  }
+
+  .ComposerBody {
+    height: 100%;
+  }
+
+  .ComposerBody-content {
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+  }
+
+  .ComposerBody-header {
+    flex: 0 0 auto;
+  }
+
+  .ComposerBody-editor {
+    display: flex;
+    flex: 1 1 auto;
+    min-height: 0;
+  }
+
+  .TextEditor {
+    display: flex;
+    flex: 1 1 auto;
+    flex-direction: column;
+    min-height: 0;
+  }
+
+  .TextEditor-editorContainer {
+    flex: 1 1 auto;
+    min-height: 0;
+    overflow: auto;
+  }
+
+  .LotteryPreview-composerMount {
+    min-width: 0;
+  }
+
+  .TextEditor-controls {
+    flex: 0 0 auto;
+  }
+}
+
 .countdown-container {
   opacity: 0.68;
   .clockdiv {
