@@ -211,40 +211,44 @@ export default class CreateLotteryModal extends Modal {
   displayOptions() {
     return this.operatorValues.map((value, i) => (
       <div className="Form-group MinMaxSelector" key={i}>
-        <fieldset className="MinMaxSelector--inputs">
-          <span class="Select">
-            {Select.component({
-              options: this.selectOptions,
-              value: this.operatorTypes[i](),
-              onchange: (selected) => this.operatorTypes[i](selected),
-            })}
-          </span>
-          <button class="Button hasIcon" type="button" onclick={() => this.operators[i](this.operators[i]() === 0 ? 1 : 0)}>
-            {this.operators[i]() === 0 ? (
-              <i aria-hidden="true" class="icon fas fa-less-than-equal Button-icon" />
-            ) : (
-              <i aria-hidden="true" class="icon fas fa-greater-than-equal Button-icon" />
-            )}
-            <span class="Button-label" />
-          </button>
-          <input
-            className="FormControl"
-            type="number"
-            name={`operatorvalue${i + 1}`}
-            bidi={value}
-            placeholder={`${extractText(app.translator.trans('nodeloc-lottery.forum.modal.option_placeholder'))} #${i + 1}`}
-          />
-        </fieldset>
-        {this.operatorValues.length > 1 && (
-          <Tooltip text={app.translator.trans('nodeloc-lottery.forum.modal.remove_option')}>
-            {Button.component({
-              type: 'button',
-              className: 'Button Button--warning LotteryModal--button',
-              icon: 'fas fa-trash',
-              onclick: this.removeOption.bind(this, i),
-            })}
-          </Tooltip>
-        )}
+        <div className="LotteryModal--condition-row">
+          <fieldset className="MinMaxSelector--inputs">
+            <span class="Select">
+              {Select.component({
+                options: this.selectOptions,
+                value: this.operatorTypes[i](),
+                onchange: (selected) => this.operatorTypes[i](selected),
+              })}
+            </span>
+            <button class="Button hasIcon" type="button" onclick={() => this.operators[i](this.operators[i]() === 0 ? 1 : 0)}>
+              {this.operators[i]() === 0 ? (
+                <i aria-hidden="true" class="icon fas fa-less-than-equal Button-icon" />
+              ) : (
+                <i aria-hidden="true" class="icon fas fa-greater-than-equal Button-icon" />
+              )}
+              <span class="Button-label" />
+            </button>
+            <input
+              className="FormControl"
+              type="number"
+              name={`operatorvalue${i + 1}`}
+              bidi={value}
+              placeholder={`${extractText(app.translator.trans('nodeloc-lottery.forum.modal.option_placeholder'))} #${i + 1}`}
+            />
+          </fieldset>
+          {this.operatorValues.length > 1 && (
+            <span className="LotteryModal--condition-delete">
+              <Tooltip text={app.translator.trans('nodeloc-lottery.forum.modal.remove_option')}>
+                {Button.component({
+                  type: 'button',
+                  className: 'Button Button--warning LotteryModal--button',
+                  icon: 'fas fa-trash',
+                  onclick: this.removeOption.bind(this, i),
+                })}
+              </Tooltip>
+            </span>
+          )}
+        </div>
       </div>
     ));
   }

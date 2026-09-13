@@ -171,9 +171,31 @@ h2.event-text {
     margin-bottom: 20px;
 
     .Form-group {
-      display: flex;
+      display: block;
       margin-top: 2.5px;
       margin-bottom: 18px;
+    }
+
+    .LotteryModal--condition-row {
+      display: flex;
+      align-items: stretch;
+      gap: 10px;
+      width: 100%;
+
+      > .MinMaxSelector--inputs {
+        flex: 1 1 auto;
+        min-width: 0;
+      }
+    }
+
+    .LotteryModal--condition-delete {
+      display: flex;
+      flex: 0 0 auto;
+      align-items: stretch;
+
+      .LotteryModal--button {
+        margin-left: 0;
+      }
     }
 
     fieldset {
