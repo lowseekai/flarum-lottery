@@ -360,7 +360,11 @@ h2.event-text {
     margin-left: 10px;
     text-align: right;
 
-    .Button--color-auto('muted-more');
+    --button-color: var(--muted-more-color);
+    --button-bg: var(--muted-more-bg);
+    --button-bg-hover: var(--muted-more-bg-hover);
+    --button-bg-active: var(--muted-more-bg-active);
+    --button-bg-disabled: var(--muted-more-bg-disabled);
 
     .icon {
       margin-right: 0;
@@ -499,7 +503,11 @@ h2.event-text {
     }
 
     &-voters {
-      .Button--color-auto('button-primary');
+      --button-color: var(--button-primary-color);
+      --button-bg: var(--button-primary-bg);
+      --button-bg-hover: var(--button-primary-bg-hover);
+      --button-bg-active: var(--button-primary-bg-active);
+      --button-bg-disabled: var(--button-primary-bg-disabled);
     }
 
     .Button {
@@ -684,7 +692,7 @@ h2.event-text {
     }
 
     .Avatar {
-      .Avatar--size(32px);
+      --size: 32px;
       vertical-align: middle;
       margin-right: 5px;
     }

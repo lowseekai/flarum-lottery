@@ -1,7 +1,7 @@
 import app from 'flarum/forum/app';
 
 import Modal from 'flarum/common/components/Modal';
-import avatar from 'flarum/common/helpers/avatar';
+import Avatar from 'flarum/common/components/Avatar';
 import username from 'flarum/common/helpers/username';
 import Link from 'flarum/common/components/Link';
 import Stream from 'flarum/common/utils/Stream';
@@ -98,7 +98,7 @@ export default class ListLotteryModal extends Modal {
 
     return (
       <Link href={app.route.user(user)}>
-        {avatar(user)} {username(user)}
+        <Avatar user={user} /> {username(user)}
       </Link>
     );
   }
