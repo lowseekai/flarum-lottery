@@ -75,6 +75,9 @@ return [
                     'firstPost.lottery',
                     'firstPost.lottery.options',
                     'firstPost.lottery.lotteryParticipants',
+                    'posts.lottery',
+                    'posts.lottery.options',
+                    'posts.lottery.lotteryParticipants',
                 ]);
             }
         )
