@@ -178,9 +178,10 @@ export default class CreateLotteryModal extends FormModal {
       <div className="Form-group">
         {Button.component(
           {
-            type: 'submit',
+            type: 'button',
             className: 'Button Button--primary LotteryModal-SubmitButton',
             loading: this.loading,
+            onclick: this.onsubmit.bind(this),
           },
           app.translator.trans('nodeloc-lottery.forum.modal.submit')
         )}
