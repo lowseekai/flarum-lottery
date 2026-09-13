@@ -21,6 +21,12 @@ app.initializers.add('nodeloc/lottery', () => {
       label: app.translator.trans('nodeloc-lottery.admin.settings.max_options'),
       min: 1,
     })
+    .registerSetting({
+      setting: 'nodeloc-lottery.coverImage',
+      type: 'text',
+      label: app.translator.trans('nodeloc-lottery.admin.settings.cover_image'),
+      help: app.translator.trans('nodeloc-lottery.admin.settings.cover_image_help'),
+    })
     .registerPermission(
       {
         icon: 'fas fa-signal',

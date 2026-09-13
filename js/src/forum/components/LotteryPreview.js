@@ -2,6 +2,17 @@ import app from 'flarum/forum/app';
 
 import Component from 'flarum/common/Component';
 
+function lotteryCoverImage() {
+  const configured = app.forum.attribute('lotteryCoverImage');
+  const cover = typeof configured === 'string' && configured.trim() ? configured.trim() : '/assets/covers/lottery_bg.png';
+
+  if (/^\/(?!\/)[^\s"'`()]+$/.test(cover) || /^https?:\/\/[^\s"'`()]+$/i.test(cover)) {
+    return cover;
+  }
+
+  return '/assets/covers/lottery_bg.png';
+}
+
 export default class LotteryPreview extends Component {
   selectOptions = {
     discussions_started: app.translator.trans('nodeloc-lottery.forum.modal.discussions_started'),
@@ -21,15 +32,21 @@ export default class LotteryPreview extends Component {
 
     return (
       <div className="LotteryPreview">
+        <div
+          className="LotteryPreview-cover"
+          style={{
+            backgroundImage: `linear-gradient(rgba(28, 28, 28, 0.42), rgba(0, 0, 0, 0.58)), url("${lotteryCoverImage()}")`,
+          }}
+        />
         <div className="LotteryPreview-header">
           <div>
             <div className="LotteryPreview-kicker">
               <i className="icon fas fa-gift" aria-hidden="true" />
-              <span>{app.translator.trans('nodeloc-lottery.forum.preview_title')}</span>
+              <span>{app.translator.trans('nodeloc-lottery.forum.modal.preview_title')}</span>
             </div>
             <h3 className="LotteryPreview-title">{lottery.prizes}</h3>
           </div>
-          <span className="LotteryPreview-status">{app.translator.trans('nodeloc-lottery.forum.preview_status')}</span>
+          <span className="LotteryPreview-status">{app.translator.trans('nodeloc-lottery.forum.modal.preview_status')}</span>
         </div>
 
         <div className="LotteryPreview-details">
@@ -52,7 +69,7 @@ export default class LotteryPreview extends Component {
               <span className="LotteryPreview-detailLabel">{app.translator.trans('nodeloc-lottery.forum.modal.participants_label')}</span>
               <strong>
                 {lottery.minParticipants || 0} -{' '}
-                {lottery.maxParticipants < 999999 ? lottery.maxParticipants : app.translator.trans('nodeloc-lottery.forum.preview_unlimited')}
+                {lottery.maxParticipants < 999999 ? lottery.maxParticipants : app.translator.trans('nodeloc-lottery.forum.modal.preview_unlimited')}
               </strong>
             </div>
           )}

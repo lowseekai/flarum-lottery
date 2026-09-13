@@ -5,6 +5,8 @@ nodeloc-lottery:
       max_options: Maximum number of options per lottery
       options_color_blend: Color blend text in lottery options
       options_color_blend_help: Use this to use color mixing to make the lottery options more readable. Disable if this feature causes issues with your forum's appearance, reducing readability.
+      cover_image: Lottery cover image URL
+      cover_image_help: Enter a site-relative path or an http/https image URL. Leave empty to use the default cover.
     permissions:
       seeParticipants: View participants
       start: Start a lottery

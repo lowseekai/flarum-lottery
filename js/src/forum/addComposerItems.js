@@ -1,6 +1,7 @@
 import app from 'flarum/forum/app';
 
 import { extend } from 'flarum/common/extend';
+import TextEditor from 'flarum/common/components/TextEditor';
 import classList from 'flarum/common/utils/classList';
 
 import CreateLotteryModal from './components/CreateLotteryModal';
@@ -55,10 +56,6 @@ export const addToComposer = (composer = discussionComposer) => {
         1
       );
     }
-
-    if (this.composer.fields.lottery) {
-      items.add('lottery-preview', <LotteryPreview lottery={this.composer.fields.lottery} />, -10);
-    }
   });
 
   extend(composer, 'data', function (data) {
@@ -68,6 +65,57 @@ export const addToComposer = (composer = discussionComposer) => {
   });
 };
 
+function syncLotteryPreview(textEditor) {
+  const composer = textEditor.attrs.composer;
+  const mentionsWrapper = textEditor.$('.ComposerBody-mentionsWrapper')[0];
+
+  if (!composer || !mentionsWrapper) {
+    return;
+  }
+
+  let mount = mentionsWrapper.querySelector('.LotteryPreview-composerMount');
+
+  if (!composer.fields.lottery) {
+    if (mount) {
+      m.render(mount, null);
+      mount.remove();
+    }
+
+    return;
+  }
+
+  if (!mount) {
+    mount = document.createElement('div');
+    mount.className = 'LotteryPreview-composerMount';
+    mentionsWrapper.appendChild(mount);
+  }
+
+  m.render(mount, <LotteryPreview lottery={composer.fields.lottery} />);
+}
+
+export const addComposerLotteryPreview = () => {
+  extend(TextEditor.prototype, 'oncreate', function () {
+    if (this.attrs.composer) {
+      syncLotteryPreview(this);
+    }
+  });
+
+  extend(TextEditor.prototype, 'onupdate', function () {
+    if (this.attrs.composer) {
+      syncLotteryPreview(this);
+    }
+  });
+
+  extend(TextEditor.prototype, 'onremove', function () {
+    const mount = this.$('.LotteryPreview-composerMount')[0];
+
+    if (mount) {
+      m.render(mount, null);
+    }
+  });
+};
+
 export default () => {
   addToComposer();
+  addComposerLotteryPreview();
 };

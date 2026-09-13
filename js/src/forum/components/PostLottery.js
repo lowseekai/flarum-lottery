@@ -9,6 +9,17 @@ import EditLotteryModal from './EditLotteryModal';
 import ListLotteryModal from './ListLotteryModal';
 import EventCountDown from './EventCountDown';
 
+function lotteryCoverImage() {
+  const configured = app.forum.attribute('lotteryCoverImage');
+  const cover = typeof configured === 'string' && configured.trim() ? configured.trim() : '/assets/covers/lottery_bg.png';
+
+  if (/^\/(?!\/)[^\s"'`()]+$/.test(cover) || /^https?:\/\/[^\s"'`()]+$/i.test(cover)) {
+    return cover;
+  }
+
+  return '/assets/covers/lottery_bg.png';
+}
+
 export default class PostLottery extends Component {
   oninit(vnode) {
     super.oninit(vnode);
@@ -51,7 +62,12 @@ export default class PostLottery extends Component {
         </div>
 
         <div>
-          <div className="PrizeInfo">
+          <div
+            className="PrizeInfo"
+            style={{
+              backgroundImage: `linear-gradient(rgba(28, 28, 28, 0.5), rgba(0, 0, 0, 0.5)), url("${lotteryCoverImage()}")`,
+            }}
+          >
             <div className="PrizeDetails">
               <span className="amount">{app.translator.trans('nodeloc-lottery.forum.modal.amount')} </span>
               <span>{lottery.amount()}</span>

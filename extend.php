@@ -151,8 +151,10 @@ return [
     (new Extend\Settings())
         ->default('nodeloc-lottery.maxOptions', 10)
         ->default('nodeloc-lottery.optionsColorBlend', true)
+        ->default('nodeloc-lottery.coverImage', '/assets/covers/lottery_bg.png')
         ->serializeToForum('allowLotteryOptionImage', 'nodeloc-lottery.allowOptionImage', 'boolval')
         ->serializeToForum('lotteryMaxOptions', 'nodeloc-lottery.maxOptions', 'intval')
+        ->serializeToForum('lotteryCoverImage', 'nodeloc-lottery.coverImage')
         ->registerLessConfigVar('nodeloc-lottery-options-color-blend', 'nodeloc-lottery.optionsColorBlend', function ($value) {
             return $value ? 'true' : 'false';
         }),

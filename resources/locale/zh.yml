@@ -5,6 +5,8 @@ nodeloc-lottery:
       max_options: 每个抽奖最多允许的条件数量
       options_color_blend: 自动调整条件文字颜色
       options_color_blend_help: 使用颜色混合提升条件文字的可读性。如果与论坛主题冲突或降低可读性，可以关闭此选项。
+      cover_image: 抽奖封面图片地址
+      cover_image_help: 填写站内图片路径或 http/https 图片地址；留空时使用默认封面。
     permissions:
       seeParticipants: 查看抽奖参与者
       start: 发起抽奖
