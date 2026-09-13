@@ -8,6 +8,24 @@ import LotteryPreview from './components/LotteryPreview';
 
 const discussionComposer = 'flarum/forum/components/DiscussionComposer';
 
+function showLotteryModal(attrs) {
+  app.modal.show(CreateLotteryModal, attrs);
+
+  // Flarum 2 mounts modals inside requestAnimationFrame. If the frame is
+  // delayed, keep the composer interaction responsive by applying the same
+  // modal state synchronously as a fallback.
+  setTimeout(() => {
+    if (app.modal.isModalOpen()) {
+      return;
+    }
+
+    app.modal.backdropShown = true;
+    app.modal.modal = { componentClass: CreateLotteryModal, attrs, key: app.modal.key++ };
+    app.modal.modalList = [app.modal.modal];
+    m.redraw.sync();
+  }, 50);
+}
+
 export const addToComposer = (composer = discussionComposer) => {
   // DiscussionComposer is lazy-loaded in Flarum 2, so register these hooks by
   // module path instead of reading its prototype during forum startup.
@@ -20,15 +38,15 @@ export const addToComposer = (composer = discussionComposer) => {
         'lottery',
         <a
           className="ComposerBody-lottery"
-          onclick={() =>
-            app.modal.show(() => Promise.resolve({ default: CreateLotteryModal }), {
+          onclick={() => {
+            showLotteryModal({
               lottery: this.composer.fields.lottery,
               onsubmit: (lottery) => {
                 this.composer.fields.lottery = lottery;
                 m.redraw();
               },
-            })
-          }
+            });
+          }}
         >
           <span className={classList('LotteryLabel', !this.composer.fields.lottery && 'none')}>
             {app.translator.trans(`nodeloc-lottery.forum.composer_discussion.${this.composer.fields.lottery ? 'edit' : 'add'}_lottery`)}

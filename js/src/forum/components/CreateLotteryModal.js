@@ -350,7 +350,7 @@ export default class CreateLotteryModal extends FormModal {
         this.loaded();
       });
     } else {
-      this.hide();
+      app.modal.close();
       m.redraw();
     }
   }
