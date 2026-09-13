@@ -6,13 +6,11 @@ import addLotteryToPost from './addLotteryToPost';
 import FailLotteryNotification from './components/FailLotteryNotification';
 import FinishLotteryNotification from './components/FinishLotteryNotification';
 import DrawLotteryNotification from './components/DrawLotteryNotification';
-import extend from './extend';
 
 export * from './components';
 export * from './models';
 
 app.initializers.add('nodeloc/lottery', () => {
-  extend.forEach((extender) => extender.extend(app));
   addDiscussionBadge();
   addComposerItems();
   addLotteryToPost();
@@ -21,4 +19,4 @@ app.initializers.add('nodeloc/lottery', () => {
   app.notificationComponents.finishLottery = FinishLotteryNotification;
 });
 
-export { extend };
+export { default as extend } from './extend';
