@@ -5,28 +5,29 @@ import classList from 'flarum/common/utils/classList';
 
 import CreateLotteryModal from './components/CreateLotteryModal';
 
-export const addToComposer = (path) => {
-  // Flarum 2 lazy-loads composer components, so resolve the module through
-  // the extender instead of reading its prototype during boot.
-  extend(path, 'oninit', function () {
-    this.addLottery = () => {
-      app.modal.show(CreateLotteryModal, {
-        lottery: this.composer.fields.lottery,
-        onsubmit: (lottery) => {
-          this.composer.fields.lottery = lottery;
-        },
-      });
-    };
-  });
+const discussionComposer = 'flarum/forum/components/DiscussionComposer';
 
-  extend(path, 'headerItems', function (items) {
+export const addToComposer = (composer = discussionComposer) => {
+  // DiscussionComposer is lazy-loaded in Flarum 2, so register these hooks by
+  // module path instead of reading its prototype during forum startup.
+  extend(composer, 'headerItems', function (items) {
     const discussion = this.composer.body?.attrs?.discussion;
     const canStartLottery = discussion?.canStartLottery() ?? app.forum.canStartLottery();
 
     if (canStartLottery) {
       items.add(
         'lottery',
-        <a className="ComposerBody-lottery" onclick={this.addLottery}>
+        <a
+          className="ComposerBody-lottery"
+          onclick={() =>
+            app.modal.show(CreateLotteryModal, {
+              lottery: this.composer.fields.lottery,
+              onsubmit: (lottery) => {
+                this.composer.fields.lottery = lottery;
+              },
+            })
+          }
+        >
           <span className={classList('LotteryLabel', !this.composer.fields.lottery && 'none')}>
             {app.translator.trans(
               `nodeloc-lottery.forum.composer_discussion.${
@@ -40,7 +41,7 @@ export const addToComposer = (path) => {
     }
   });
 
-  extend(path, 'data', function (data) {
+  extend(composer, 'data', function (data) {
     if (this.composer.fields.lottery) {
       data.lotteryData = this.composer.fields.lottery;
     }
@@ -48,5 +49,5 @@ export const addToComposer = (path) => {
 };
 
 export default () => {
-  addToComposer('flarum/forum/components/DiscussionComposer');
+  addToComposer();
 };

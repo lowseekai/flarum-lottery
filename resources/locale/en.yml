@@ -46,17 +46,23 @@ nodeloc-lottery:
       lottery_placeholder: Prizes
       price: Price
       amount: Amount
+      prizes_help: The prize name shown in the lottery card. Use a clear and specific description.
+      price_help: Points charged to each participant; the host receives the total on success, and fees are refunded if canceled for too few participants.
+      amount_help: The number of winners selected at draw time. Keep it at or below the expected number of participants.
       min_participants: Min participants
       max_participants: Max participants
       add_option_label: Add an Option
       date_placeholder: Draw Time
+      date_help: Must be in the future and no more than 3 days from now. The lottery is drawn automatically.
       edit_title: Edit lottery
       include_prizes: You must include a prizes
       include_price: You must include a price
       include_amount: You must include a amount
       include_end_date: You must include a end date
       max: You can have a maximum of {max} answers
-      min: You must include a minimum of 2 answers
+      min: You must include a minimum of 1 answer
+      remove_option: Remove this condition
+      end_date_too_far: The draw time cannot be more than 3 days from now.
       no_participants: No Participants
       option_placeholder: Threshold
       image_option_placeholder: Image URL (optional)

@@ -63,7 +63,8 @@ class EditLotteryHandler
         $command->actor->assertCan('edit', $lottery);
 
         $attributes = (array) Arr::get($command->data, 'attributes');
-        $options = collect(Arr::get($attributes, 'options', []));
+        $optionsProvided = array_key_exists('options', $attributes);
+        $options = collect($optionsProvided ? Arr::get($attributes, 'options', []) : []);
 
         $this->validator->assertValid($attributes);
 
@@ -111,10 +112,19 @@ class EditLotteryHandler
 
         $lottery->save();
 
-        // remove options not passed if 2 or more are
-        if ($options->isNotEmpty() && $options->count() >= 2) {
-            $ids = $options->pluck('id')->whereNotNull()->toArray();
-            $lottery->options()->whereNotIn('id', $ids)->delete();
+        // Remove options omitted by the editor, including when only one remains.
+        if ($optionsProvided) {
+            $ids = $options
+                ->pluck('id')
+                ->filter(fn ($id) => $id !== null && $id !== '')
+                ->values()
+                ->all();
+
+            if ($ids) {
+                $lottery->options()->whereNotIn('id', $ids)->delete();
+            } else {
+                $lottery->options()->delete();
+            }
         }
 
         // update + add new options

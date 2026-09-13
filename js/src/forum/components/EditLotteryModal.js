@@ -26,6 +26,11 @@ export default class EditLotteryModal extends CreateLotteryModal {
   }
 
   data() {
+    if (this.endDate() && dayjs(this.endDate()).isAfter(dayjs(this.datepickerMaxDate))) {
+      alert(app.translator.trans('nodeloc-lottery.forum.modal.end_date_too_far'));
+      return null;
+    }
+
     const options = this.operatorValues.map((value, index) => {
       const option = this.options[index];
       const data = option?.data ? { ...option.data } : { type: 'lottery-options' };
@@ -59,10 +64,16 @@ export default class EditLotteryModal extends CreateLotteryModal {
       return;
     }
 
+    const data = this.data();
+
+    if (data === null) {
+      return;
+    }
+
     this.loading = true;
 
     return this.lottery
-      .save(this.data())
+      .save(data)
       .then(() => {
         this.hide();
         m.redraw();

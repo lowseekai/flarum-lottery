@@ -10,6 +10,7 @@ use Flarum\User\User;
 use Illuminate\Console\Command;
 use Illuminate\Database\Eloquent\Collection;
 use Nodeloc\Lottery\Lottery;
+use Nodeloc\Lottery\LotteryTitle;
 use Nodeloc\Lottery\Notification\DrawLotteryBlueprint;
 use Nodeloc\Lottery\Notification\FailLotteryBlueprint;
 use Nodeloc\Lottery\Notification\FinishLotteryBlueprint;
@@ -122,6 +123,9 @@ class DrawCommand extends Command
                 $this->info($lottery->id.' completed without a linked discussion.');
                 continue;
             }
+
+            $discussion->title = LotteryTitle::ended($discussion->title);
+            $discussion->save();
 
             if ($successful) {
                 $this->notifications->sync(new FinishLotteryBlueprint($discussion), [$discussion->user]);

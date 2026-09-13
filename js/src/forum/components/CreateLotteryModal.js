@@ -6,6 +6,7 @@ import ItemList from 'flarum/common/utils/ItemList';
 import Stream from 'flarum/common/utils/Stream';
 import extractText from 'flarum/common/utils/extractText';
 import Select from 'flarum/common/components/Select';
+import Tooltip from 'flarum/common/components/Tooltip';
 
 export default class CreateLotteryModal extends Modal {
   oninit(vnode) {
@@ -22,6 +23,7 @@ export default class CreateLotteryModal extends Modal {
     this.minParticipants = Stream(0);
     this.maxParticipants = Stream(999999);
     this.datepickerMinDate = this.formatDate(undefined);
+    this.datepickerMaxDate = this.formatDate(dayjs().add(3, 'day'));
 
     const { lottery } = this.attrs;
 
@@ -72,7 +74,7 @@ export default class CreateLotteryModal extends Modal {
     items.add(
       'prizes',
       <div className="Form-group">
-        <label className="label">{app.translator.trans('nodeloc-lottery.forum.modal.lottery_placeholder')}</label>
+        {this.labelWithHelp('lottery_placeholder', 'prizes_help')}
         <input type="text" name="prizes" className="FormControl" bidi={this.prizes} />
       </div>,
       100
@@ -81,7 +83,7 @@ export default class CreateLotteryModal extends Modal {
     items.add(
       'price',
       <div className="Form-group">
-        <label className="label">{app.translator.trans('nodeloc-lottery.forum.modal.price')}</label>
+        {this.labelWithHelp('price', 'price_help')}
         <input type="number" min="0" name="price" className="FormControl" bidi={this.price} />
       </div>,
       100
@@ -90,7 +92,7 @@ export default class CreateLotteryModal extends Modal {
     items.add(
       'amount',
       <div className="Form-group">
-        <label className="label">{app.translator.trans('nodeloc-lottery.forum.modal.amount')}</label>
+        {this.labelWithHelp('amount', 'amount_help')}
         <input type="number" min="1" name="amount" className="FormControl" bidi={this.amount} />
       </div>,
       100
@@ -115,7 +117,7 @@ export default class CreateLotteryModal extends Modal {
     items.add(
       'date',
       <div className="Form-group">
-        <label className="label">{app.translator.trans('nodeloc-lottery.forum.modal.date_placeholder')}</label>
+        {this.labelWithHelp('date_placeholder', 'date_help')}
         <div className="LotteryModal--date">
           <input
             className="FormControl"
@@ -123,7 +125,7 @@ export default class CreateLotteryModal extends Modal {
             name="date"
             bidi={this.endDate}
             min={this.datepickerMinDate}
-            max={this.formatDate('2038')}
+            max={this.datepickerMaxDate}
           />
           {Button.component({
             className: 'Button LotteryModal--button',
@@ -189,52 +191,64 @@ export default class CreateLotteryModal extends Modal {
     return items;
   }
 
+  labelWithHelp(labelKey, helpKey) {
+    return (
+      <label className="label LotteryModal-label">
+        <span>{app.translator.trans(`nodeloc-lottery.forum.modal.${labelKey}`)}</span>
+        <Tooltip text={app.translator.trans(`nodeloc-lottery.forum.modal.${helpKey}`)}>
+          <i className="icon fas fa-exclamation-circle LotteryModal-helpIcon" aria-hidden="true" />
+        </Tooltip>
+      </label>
+    );
+  }
+
   selectOptions = {
     discussions_started: app.translator.trans('nodeloc-lottery.forum.modal.discussions_started'),
     posts_made: app.translator.trans('nodeloc-lottery.forum.modal.posts_made'),
     points: app.translator.trans('nodeloc-lottery.forum.modal.points'),
-    lotteries_made: app.translator.trans('nodeloc-lottery.forum.modal.lotteries_made'),
-    read_permission: app.translator.trans('nodeloc-lottery.forum.modal.read_permission'),
   };
 
   displayOptions() {
     return this.operatorValues.map((value, i) => (
       <div className="Form-group MinMaxSelector" key={i}>
-        <fieldset className="MinMaxSelector--inputs">
-          <span class="Select">
-            {Select.component({
-              options: this.selectOptions,
-              value: this.operatorTypes[i](),
-              onchange: (selected) => this.operatorTypes[i](selected),
-            })}
-          </span>
-          <button
-            class="Button hasIcon"
-            type="button"
-            onclick={() => this.operators[i](this.operators[i]() === 0 ? 1 : 0)}
-          >
-            {this.operators[i]() === 0 ? (
-              <i aria-hidden="true" class="icon fas fa-less-than-equal Button-icon" />
-            ) : (
-              <i aria-hidden="true" class="icon fas fa-greater-than-equal Button-icon" />
-            )}
-            <span class="Button-label" />
-          </button>
-          <input
-            className="FormControl"
-            type="number"
-            name={`operatorvalue${i + 1}`}
-            bidi={value}
-            placeholder={`${extractText(app.translator.trans('nodeloc-lottery.forum.modal.option_placeholder'))} #${i + 1}`}
-          />
-        </fieldset>
-        {i >= 2 &&
-          Button.component({
-            type: 'button',
-            className: 'Button Button--warning LotteryModal--button',
-            icon: 'fas fa-minus',
-            onclick: this.removeOption.bind(this, i),
-          })}
+        <div className="LotteryModal--condition-row">
+          <fieldset className="MinMaxSelector--inputs">
+            <span class="Select">
+              {Select.component({
+                options: this.selectOptions,
+                value: this.operatorTypes[i](),
+                onchange: (selected) => this.operatorTypes[i](selected),
+              })}
+            </span>
+            <button class="Button hasIcon" type="button" onclick={() => this.operators[i](this.operators[i]() === 0 ? 1 : 0)}>
+              {this.operators[i]() === 0 ? (
+                <i aria-hidden="true" class="icon fas fa-less-than-equal Button-icon" />
+              ) : (
+                <i aria-hidden="true" class="icon fas fa-greater-than-equal Button-icon" />
+              )}
+              <span class="Button-label" />
+            </button>
+            <input
+              className="FormControl"
+              type="number"
+              name={`operatorvalue${i + 1}`}
+              bidi={value}
+              placeholder={`${extractText(app.translator.trans('nodeloc-lottery.forum.modal.option_placeholder'))} #${i + 1}`}
+            />
+          </fieldset>
+          {this.operatorValues.length > 1 && (
+            <span className="LotteryModal--condition-delete">
+              <Tooltip text={app.translator.trans('nodeloc-lottery.forum.modal.remove_option')}>
+                {Button.component({
+                  type: 'button',
+                  className: 'Button Button--warning LotteryModal--button',
+                  icon: 'fas fa-trash',
+                  onclick: this.removeOption.bind(this, i),
+                })}
+              </Tooltip>
+            </span>
+          )}
+        </div>
       </div>
     ));
   }
@@ -252,6 +266,10 @@ export default class CreateLotteryModal extends Modal {
   }
 
   removeOption(index) {
+    if (this.operatorValues.length <= 1) {
+      return;
+    }
+
     this.operatorTypes.splice(index, 1);
     this.operators.splice(index, 1);
     this.operatorValues.splice(index, 1);
@@ -297,6 +315,11 @@ export default class CreateLotteryModal extends Modal {
     }
     if (!this.endDate()) {
       alert(extractText(app.translator.trans('nodeloc-lottery.forum.modal.include_end_date')));
+      return null;
+    }
+
+    if (dayjs(this.endDate()).isAfter(dayjs(this.datepickerMaxDate))) {
+      alert(extractText(app.translator.trans('nodeloc-lottery.forum.modal.end_date_too_far')));
       return null;
     }
 

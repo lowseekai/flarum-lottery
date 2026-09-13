@@ -11,7 +11,9 @@
 
 namespace Nodeloc\Lottery\Validators;
 
+use Carbon\Carbon;
 use Flarum\Foundation\AbstractValidator;
+use Flarum\Locale\TranslatorInterface;
 use Illuminate\Support\Fluent;
 use Illuminate\Validation\Rule;
 
@@ -29,6 +31,21 @@ class LotteryValidator extends AbstractValidator
                 Rule::when(function (Fluent $input) {
                     return !is_bool($input->get('endDate'));
                 }, 'date|after:now|before:2038-01-18'),
+                function ($attribute, $value, $fail) {
+                    if (is_bool($value) || $value === null || $value === '') {
+                        return;
+                    }
+
+                    try {
+                        $date = Carbon::parse($value);
+                    } catch (\Throwable) {
+                        return;
+                    }
+
+                    if ($date->isAfter(Carbon::now()->addDays(3))) {
+                        $fail(resolve(TranslatorInterface::class)->trans('nodeloc-lottery.forum.modal.end_date_too_far'));
+                    }
+                },
             ],
         ];
     }
