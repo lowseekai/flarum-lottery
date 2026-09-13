@@ -21,7 +21,7 @@ export const addToComposer = (composer = discussionComposer) => {
         <a
           className="ComposerBody-lottery"
           onclick={() =>
-            app.modal.show(CreateLotteryModal, {
+            app.modal.show(() => Promise.resolve({ default: CreateLotteryModal }), {
               lottery: this.composer.fields.lottery,
               onsubmit: (lottery) => {
                 this.composer.fields.lottery = lottery;
