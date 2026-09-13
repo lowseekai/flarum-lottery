@@ -74,6 +74,9 @@ nodeloc-lottery:
       hide_votes_label: Hide votes until lottery ends
       allow_cancel_enter_label: Allow users to cancel participation
       submit: Submit
+      preview_title: Lottery preview
+      preview_status: Pending publication
+      preview_unlimited: Unlimited
       discussions_started: Discussions started
       posts_made: Posts made
       likes_given: Likes given

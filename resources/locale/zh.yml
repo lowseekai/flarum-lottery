@@ -75,7 +75,10 @@ nodeloc-lottery:
       participants_help: 可设置最少和最多参与人数。
       hide_votes_label: 抽奖结束前隐藏参与者
       allow_cancel_enter_label: 允许用户取消参与
-      submit: 保存
+      submit: 提交
+      preview_title: 抽奖预览
+      preview_status: 待发布
+      preview_unlimited: 不限
       discussions_started: 发起主题数
       posts_made: 回复数
       likes_given: 点赞数

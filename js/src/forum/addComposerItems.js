@@ -4,6 +4,7 @@ import { extend } from 'flarum/common/extend';
 import classList from 'flarum/common/utils/classList';
 
 import CreateLotteryModal from './components/CreateLotteryModal';
+import LotteryPreview from './components/LotteryPreview';
 
 const discussionComposer = 'flarum/forum/components/DiscussionComposer';
 
@@ -24,20 +25,21 @@ export const addToComposer = (composer = discussionComposer) => {
               lottery: this.composer.fields.lottery,
               onsubmit: (lottery) => {
                 this.composer.fields.lottery = lottery;
+                m.redraw();
               },
             })
           }
         >
           <span className={classList('LotteryLabel', !this.composer.fields.lottery && 'none')}>
-            {app.translator.trans(
-              `nodeloc-lottery.forum.composer_discussion.${
-                this.composer.fields.lottery ? 'edit' : 'add'
-              }_lottery`
-            )}
+            {app.translator.trans(`nodeloc-lottery.forum.composer_discussion.${this.composer.fields.lottery ? 'edit' : 'add'}_lottery`)}
           </span>
         </a>,
         1
       );
+    }
+
+    if (this.composer.fields.lottery) {
+      items.add('lottery-preview', <LotteryPreview lottery={this.composer.fields.lottery} />, -10);
     }
   });
 

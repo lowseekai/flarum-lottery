@@ -1,14 +1,14 @@
 import app from 'flarum/forum/app';
 
 import Button from 'flarum/common/components/Button';
-import Modal from 'flarum/common/components/Modal';
+import FormModal from 'flarum/common/components/FormModal';
 import ItemList from 'flarum/common/utils/ItemList';
 import Stream from 'flarum/common/utils/Stream';
 import extractText from 'flarum/common/utils/extractText';
 import Select from 'flarum/common/components/Select';
 import Tooltip from 'flarum/common/components/Tooltip';
 
-export default class CreateLotteryModal extends Modal {
+export default class CreateLotteryModal extends FormModal {
   oninit(vnode) {
     super.oninit(vnode);
 
@@ -329,15 +329,19 @@ export default class CreateLotteryModal extends Modal {
   onsubmit(event) {
     event.preventDefault();
 
+    if (this.loading) {
+      return;
+    }
+
     const data = this.data();
 
     if (data === null) {
       return;
     }
 
-    const promise = this.attrs.onsubmit(data);
+    const promise = this.attrs.onsubmit ? this.attrs.onsubmit(data) : null;
 
-    if (promise instanceof Promise) {
+    if (promise && typeof promise.then === 'function') {
       this.loading = true;
 
       promise.then(this.hide.bind(this), (error) => {
@@ -346,7 +350,8 @@ export default class CreateLotteryModal extends Modal {
         this.loaded();
       });
     } else {
-      app.modal.close();
+      this.hide();
+      m.redraw();
     }
   }
 
