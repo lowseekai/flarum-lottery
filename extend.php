@@ -72,6 +72,9 @@ return [
             [Endpoint\Show::class, Endpoint\Create::class],
             function (Endpoint\Show|Endpoint\Create $endpoint): Endpoint\Endpoint {
                 return $endpoint->addDefaultInclude([
+                    'lottery',
+                    'lottery.options',
+                    'lottery.lotteryParticipants',
                     'firstPost.lottery',
                     'firstPost.lottery.options',
                     'firstPost.lottery.lotteryParticipants',
