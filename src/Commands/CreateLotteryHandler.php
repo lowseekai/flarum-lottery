@@ -93,10 +93,12 @@ class CreateLotteryHandler
             $carbonDate = null;
 
             if (is_string($endDate) && trim($endDate) !== '') {
-                $parsedDate = Carbon::parse($endDate);
+                // The datetime-local form is displayed in China Standard Time.
+                // Normalize the persisted value to UTC so it remains correct on UTC servers.
+                $parsedDate = Carbon::parse($endDate, 'Asia/Shanghai');
 
                 if ($parsedDate->isFuture()) {
-                    $carbonDate = $parsedDate;
+                    $carbonDate = $parsedDate->utc();
                 }
             }
 
@@ -104,7 +106,7 @@ class CreateLotteryHandler
                 Arr::get($attributes, 'prizes'),
                 $command->post->id,
                 $command->actor->id,
-                $carbonDate != null ? $carbonDate->setTimezone('Asia/Shanghai') : null,
+                $carbonDate,
                 (int) Arr::get($attributes, 'price', 0),
                 (int) Arr::get($attributes, 'amount', 0),
                 (int) Arr::get($attributes, 'minParticipants', Arr::get($attributes, 'min_participants', 0)),

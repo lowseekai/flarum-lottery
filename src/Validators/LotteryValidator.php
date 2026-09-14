@@ -37,12 +37,12 @@ class LotteryValidator extends AbstractValidator
                     }
 
                     try {
-                        $date = Carbon::parse($value);
+                        $date = Carbon::parse($value, 'Asia/Shanghai');
                     } catch (\Throwable) {
                         return;
                     }
 
-                    if ($date->isAfter(Carbon::now()->addDays(3))) {
+                    if ($date->isAfter(Carbon::now('Asia/Shanghai')->addDays(3))) {
                         $fail(resolve(TranslatorInterface::class)->trans('nodeloc-lottery.forum.modal.end_date_too_far'));
                     }
                 },

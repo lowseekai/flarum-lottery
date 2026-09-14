@@ -35,6 +35,7 @@ nodeloc-lottery:
     lottery:
       cannot_cancel_lottery: Users can't cancel participation
       submit_button: Click to participate
+      participation_success: Participation successful. Please wait for the draw.
 
     composer_discussion:
       add_lottery: => nodeloc-lottery.forum.moderation.add

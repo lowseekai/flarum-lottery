@@ -36,6 +36,7 @@ nodeloc-lottery:
     lottery:
       cannot_cancel_lottery: 用户不能取消参与。
       submit_button: 参与抽奖
+      participation_success: 参与成功，请等待开奖
 
     composer_discussion:
       add_lottery: => nodeloc-lottery.forum.moderation.add

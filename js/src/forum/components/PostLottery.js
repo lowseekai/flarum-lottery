@@ -209,6 +209,10 @@ export default class PostLottery extends Component {
       })
       .then((response) => {
         app.store.pushPayload(response);
+        app.alerts.show(
+          { type: 'success' },
+          app.translator.trans('nodeloc-lottery.forum.lottery.participation_success')
+        );
       })
       .finally(() => {
         this.loadingOptions = false;
