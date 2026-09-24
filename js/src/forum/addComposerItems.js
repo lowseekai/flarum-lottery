@@ -44,6 +44,7 @@ export const addToComposer = (composer = discussionComposer) => {
               lottery: this.composer.fields.lottery,
               onsubmit: (lottery) => {
                 this.composer.fields.lottery = lottery;
+                syncLotteryPreviewForComposer(this.composer, document.querySelector('.ComposerBody-mentionsWrapper'));
                 m.redraw();
               },
             });
@@ -65,9 +66,7 @@ export const addToComposer = (composer = discussionComposer) => {
   });
 };
 
-function syncLotteryPreview(textEditor) {
-  const composer = textEditor.attrs.composer;
-  const mentionsWrapper = textEditor.$('.ComposerBody-mentionsWrapper')[0];
+function syncLotteryPreviewForComposer(composer, mentionsWrapper) {
   const composerElement = mentionsWrapper?.closest('.Composer');
 
   if (!composer || !mentionsWrapper) {
@@ -107,6 +106,10 @@ function syncLotteryPreview(textEditor) {
   }
 
   m.render(mount, <LotteryPreview lottery={composer.fields.lottery} />);
+}
+
+function syncLotteryPreview(textEditor) {
+  syncLotteryPreviewForComposer(textEditor.attrs.composer, textEditor.$('.ComposerBody-mentionsWrapper')[0]);
 }
 
 export const addComposerLotteryPreview = () => {
