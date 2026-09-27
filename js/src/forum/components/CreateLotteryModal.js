@@ -56,6 +56,14 @@ export default class CreateLotteryModal extends FormModal {
     return app.translator.trans('nodeloc-lottery.forum.modal.add_title');
   }
 
+  feeNotice() {
+    const fee = Number(app.forum.lotteryStartFee?.() ?? 0);
+
+    if (!fee || this.attrs.lottery) return null;
+
+    return <p className="helpText LotteryModal-startFee">{app.translator.trans('nodeloc-lottery.forum.modal.start_fee_notice', { fee })}</p>;
+  }
+
   className() {
     return 'LotteryDiscussionModal Modal--medium';
   }
@@ -63,7 +71,7 @@ export default class CreateLotteryModal extends FormModal {
   content() {
     return (
       <div className="Modal-body">
-        <div className="LotteryDiscussionModal-form">{this.fields().toArray()}</div>
+        <div className="LotteryDiscussionModal-form">{this.feeNotice()}{this.fields().toArray()}</div>
       </div>
     );
   }

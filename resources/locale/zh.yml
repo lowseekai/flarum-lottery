@@ -1,6 +1,8 @@
 nodeloc-lottery:
   admin:
     settings:
+      start_fee: 发起抽奖所需积分
+      start_fee_help: 发布新抽奖时扣除这笔积分，设置为 0 可关闭发起费用。
       allow_option_image: 允许为每个抽奖条件填写图片地址
       max_options: 每个抽奖最多允许的条件数量
       options_color_blend: 自动调整条件文字颜色
@@ -8,6 +10,7 @@ nodeloc-lottery:
       cover_image: 抽奖封面图片地址
       cover_image_help: 填写站内图片路径或 http/https 图片地址；留空时使用默认封面。
     permissions:
+      start_without_fee: 发起抽奖免积分
       seeParticipants: 查看抽奖参与者
       start: 发起抽奖
       self_edit: 编辑自己发起的抽奖（需要帖子编辑权限）
@@ -91,6 +94,8 @@ nodeloc-lottery:
       money: 积分
       lotteries_made: 发起抽奖数
       not_enough: 条件不足
+      not_enough_start_fee: 你的积分不足，无法发起抽奖。
+      start_fee_notice: 发起此抽奖需要支付 {fee} 积分。
       read_permission: 访问权限
 
     moderation:

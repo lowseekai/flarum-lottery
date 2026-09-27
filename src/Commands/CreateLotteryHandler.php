@@ -21,7 +21,11 @@ use Nodeloc\Lottery\LotteryOption;
 use Nodeloc\Lottery\Validators\LotteryOptionValidator;
 use Nodeloc\Lottery\Validators\LotteryValidator;
 use Illuminate\Contracts\Events\Dispatcher;
+use Illuminate\Database\ConnectionInterface;
 use Illuminate\Support\Arr;
+use Flarum\Foundation\ValidationException;
+use Flarum\Locale\TranslatorInterface;
+use Ramon\PointSystem\Repository\PointsRepository;
 
 class CreateLotteryHandler
 {
@@ -50,13 +54,22 @@ class CreateLotteryHandler
      */
     protected $posts;
 
-    public function __construct(PostRepository $posts, LotteryValidator $validator, LotteryOptionValidator $optionValidator, Dispatcher $events, SettingsRepositoryInterface $settings)
+    protected $points;
+
+    protected $db;
+
+    protected $translator;
+
+    public function __construct(PostRepository $posts, LotteryValidator $validator, LotteryOptionValidator $optionValidator, Dispatcher $events, SettingsRepositoryInterface $settings, PointsRepository $points, ConnectionInterface $db, TranslatorInterface $translator)
     {
         $this->validator = $validator;
         $this->optionValidator = $optionValidator;
         $this->events = $events;
         $this->settings = $settings;
         $this->posts = $posts;
+        $this->points = $points;
+        $this->db = $db;
+        $this->translator = $translator;
     }
 
     public function handle(CreateLottery $command)
@@ -88,7 +101,10 @@ class CreateLotteryHandler
             // This ensures every attribute will be validated (Flarum doesn't validate missing keys)
             $this->optionValidator->assertValid($optionData);
         }
-        return ($command->saveLotteryOn)(function () use ($optionsData, $attributes, $command) {
+        return $this->db->transaction(function () use ($optionsData, $attributes, $command) {
+            $this->chargeStartFee($command->actor, (int) $command->post->id);
+
+            return ($command->saveLotteryOn)(function () use ($optionsData, $attributes, $command) {
             $endDate = Arr::get($attributes, 'endDate');
             $carbonDate = null;
 
@@ -134,7 +150,25 @@ class CreateLotteryHandler
                 $lottery->options()->save($option);
             }
 
-            return $lottery;
+                return $lottery;
+            });
         });
+    }
+
+    protected function chargeStartFee(\Flarum\User\User $actor, int $postId): void
+    {
+        $fee = max(0, (int) $this->settings->get('nodeloc-lottery.startFee', 0));
+
+        if ($fee === 0 || $actor->hasPermission('lottery.startWithoutFee')) {
+            return;
+        }
+
+        try {
+            $this->points->deduct($actor, $fee, 'lottery.start_fee', 'post', $postId);
+        } catch (\DomainException) {
+            throw new ValidationException([
+                'lottery' => $this->translator->trans('nodeloc-lottery.forum.modal.not_enough_start_fee'),
+            ]);
+        }
     }
 }

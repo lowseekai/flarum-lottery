@@ -134,6 +134,8 @@ return [
         ->fields(fn () => [
             Schema\Boolean::make('canStartLottery')
                 ->get(fn ($forum, Context $context) => $context->getActor()->can('discussion.lottery.start')),
+            Schema\Integer::make('lotteryStartFee')
+                ->get(fn () => (int) resolve(\Flarum\Settings\SettingsRepositoryInterface::class)->get('nodeloc-lottery.startFee', 0)),
         ]),
 
     (new Extend\ApiResource(Resource\UserResource::class))
@@ -153,10 +155,12 @@ return [
 
     (new Extend\Settings())
         ->default('nodeloc-lottery.maxOptions', 10)
+        ->default('nodeloc-lottery.startFee', 0)
         ->default('nodeloc-lottery.optionsColorBlend', true)
         ->default('nodeloc-lottery.coverImage', '/assets/covers/lottery_bg.png')
         ->serializeToForum('allowLotteryOptionImage', 'nodeloc-lottery.allowOptionImage', 'boolval')
         ->serializeToForum('lotteryMaxOptions', 'nodeloc-lottery.maxOptions', 'intval')
+        ->serializeToForum('lotteryStartFee', 'nodeloc-lottery.startFee', 'intval')
         ->serializeToForum('lotteryCoverImage', 'nodeloc-lottery.coverImage')
         ->registerLessConfigVar('nodeloc-lottery-options-color-blend', 'nodeloc-lottery.optionsColorBlend', function ($value) {
             return $value ? 'true' : 'false';

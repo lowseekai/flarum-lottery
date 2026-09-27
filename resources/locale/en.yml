@@ -1,6 +1,8 @@
 nodeloc-lottery:
   admin:
     settings:
+      start_fee: Points required to start a lottery
+      start_fee_help: Users pay this fee when a new lottery is published. Set 0 to disable the fee.
       allow_option_image: Allow an image URL to be provided for each lottery option
       max_options: Maximum number of options per lottery
       options_color_blend: Color blend text in lottery options
@@ -8,6 +10,7 @@ nodeloc-lottery:
       cover_image: Lottery cover image URL
       cover_image_help: Enter a site-relative path or an http/https image URL. Leave empty to use the default cover.
     permissions:
+      start_without_fee: Start lotteries without paying the fee
       seeParticipants: View participants
       start: Start a lottery
       self_edit: Edit created lotterys (requires post edit permission)
@@ -90,6 +93,8 @@ nodeloc-lottery:
       money: Points
       lotteries_made: Lotteries started
       not_enough: Not enough
+      not_enough_start_fee: You do not have enough points to start this lottery.
+      start_fee_notice: Starting this lottery costs {fee} points.
       read_permission: Permission
 
 

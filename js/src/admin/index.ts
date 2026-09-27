@@ -22,11 +22,26 @@ app.initializers.add('nodeloc/lottery', () => {
       min: 1,
     })
     .registerSetting({
+      setting: 'nodeloc-lottery.startFee',
+      type: 'number',
+      label: app.translator.trans('nodeloc-lottery.admin.settings.start_fee'),
+      help: app.translator.trans('nodeloc-lottery.admin.settings.start_fee_help'),
+      min: 0,
+    })
+    .registerSetting({
       setting: 'nodeloc-lottery.coverImage',
       type: 'text',
       label: app.translator.trans('nodeloc-lottery.admin.settings.cover_image'),
       help: app.translator.trans('nodeloc-lottery.admin.settings.cover_image_help'),
     })
+    .registerPermission(
+      {
+        icon: 'fas fa-coins',
+        label: app.translator.trans('nodeloc-lottery.admin.permissions.start_without_fee'),
+        permission: 'lottery.startWithoutFee',
+      },
+      'start'
+    )
     .registerPermission(
       {
         icon: 'fas fa-signal',
