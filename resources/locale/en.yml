@@ -95,6 +95,7 @@ nodeloc-lottery:
       not_enough: Not enough
       not_enough_start_fee: You do not have enough points to start this lottery.
       start_fee_notice: Starting this lottery costs {fee} points.
+      confirm_start_fee: Starting this lottery will deduct {fee} points. Continue?
       read_permission: Permission
 
 
