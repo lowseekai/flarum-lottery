@@ -6,6 +6,8 @@ import classList from 'flarum/common/utils/classList';
 
 import CreateLotteryModal from './components/CreateLotteryModal';
 import LotteryPreview from './components/LotteryPreview';
+import LotteryStartFeeModal from './components/LotteryStartFeeModal';
+import { override } from 'flarum/common/extend';
 
 const discussionComposer = 'flarum/forum/components/DiscussionComposer';
 
@@ -28,6 +30,26 @@ function showLotteryModal(attrs) {
 }
 
 export const addToComposer = (composer = discussionComposer) => {
+  override(composer, 'onsubmit', function (original) {
+    const lottery = this.composer.fields.lottery;
+    const fee = Number(app.forum.lotteryStartFee?.() ?? 0);
+    const exempt = app.forum.canStartLotteryWithoutFee?.() ?? false;
+
+    if (lottery && fee > 0 && !exempt && !this.lotteryStartFeeConfirmed) {
+      app.modal.show(LotteryStartFeeModal, {
+        fee,
+        onconfirm: () => {
+          this.lotteryStartFeeConfirmed = true;
+          original.apply(this);
+        },
+      });
+      return;
+    }
+
+    this.lotteryStartFeeConfirmed = false;
+    original.apply(this);
+  });
+
   // DiscussionComposer is lazy-loaded in Flarum 2, so register these hooks by
   // module path instead of reading its prototype during forum startup.
   extend(composer, 'headerItems', function (items) {

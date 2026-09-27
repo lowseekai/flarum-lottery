@@ -348,12 +348,6 @@ export default class CreateLotteryModal extends FormModal {
       return;
     }
 
-    const startFee = Number(app.forum.lotteryStartFee?.() ?? 0);
-
-    if (!this.attrs.lottery && startFee > 0 && !confirm(app.translator.trans('nodeloc-lottery.forum.modal.confirm_start_fee', { fee: startFee }))) {
-      return;
-    }
-
     const promise = this.attrs.onsubmit ? this.attrs.onsubmit(data) : null;
 
     if (promise && typeof promise.then === 'function') {

@@ -96,7 +96,10 @@ nodeloc-lottery:
       not_enough: 条件不足
       not_enough_start_fee: 你的积分不足，无法发起抽奖。
       start_fee_notice: 发起此抽奖需要支付 {fee} 积分。
+      confirm_start_fee_title: 确认抽奖发起费用
       confirm_start_fee: 发起此抽奖将扣除 {fee} 积分，是否继续？
+      confirm_start_fee_action: 确认并发布
+      confirm_start_fee_cancel: 取消
       read_permission: 访问权限
 
     moderation:

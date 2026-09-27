@@ -136,6 +136,8 @@ return [
                 ->get(fn ($forum, Context $context) => $context->getActor()->can('discussion.lottery.start')),
             Schema\Integer::make('lotteryStartFee')
                 ->get(fn () => (int) resolve(\Flarum\Settings\SettingsRepositoryInterface::class)->get('nodeloc-lottery.startFee', 0)),
+            Schema\Boolean::make('canStartLotteryWithoutFee')
+                ->get(fn ($forum, Context $context) => $context->getActor()->hasPermission('lottery.startWithoutFee')),
         ]),
 
     (new Extend\ApiResource(Resource\UserResource::class))
