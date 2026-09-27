@@ -2,6 +2,52 @@
   --lottery-option-color: var(--muted-color);
   --lottery-option-active-color: var(--secondary-color);
 }
+
+.LotteryStartFeeModal {
+  .Modal-body {
+    padding: 20px 24px 24px;
+  }
+
+  &-message {
+    padding: 14px 16px;
+    border: 1px solid var(--control-bg);
+    border-left: 3px solid var(--primary-color);
+    border-radius: var(--border-radius);
+    background: var(--control-bg);
+  }
+
+  &-primaryText,
+  &-secondaryText {
+    margin: 0;
+  }
+
+  &-primaryText {
+    color: var(--text-color);
+    font-size: 15px;
+    font-weight: 600;
+    line-height: 1.5;
+  }
+
+  &-secondaryText {
+    margin-top: 8px;
+    color: var(--muted-color);
+    font-size: 13px;
+    line-height: 1.5;
+  }
+
+  &-actions {
+    display: flex;
+    justify-content: flex-end;
+    gap: 10px;
+    margin-top: 20px;
+  }
+
+  &-cancel {
+    border: 1px solid var(--control-bg);
+    background: var(--body-bg);
+    color: var(--control-color);
+  }
+}
 .Badge--lottery {
   background: #c72828;
 }

@@ -16,10 +16,17 @@ export default class LotteryStartFeeModal extends Modal {
 
     return (
       <div className="Modal-body">
-        <p>{app.translator.trans('nodeloc-lottery.forum.modal.confirm_start_fee', { fee })}</p>
-        <div className="Form-group">
+        <div className="LotteryStartFeeModal-message">
+          <p className="LotteryStartFeeModal-primaryText">
+            {app.translator.trans('nodeloc-lottery.forum.modal.confirm_start_fee', { fee })}
+          </p>
+          <p className="LotteryStartFeeModal-secondaryText">
+            {app.translator.trans('nodeloc-lottery.forum.modal.confirm_start_fee_exemption')}
+          </p>
+        </div>
+        <div className="LotteryStartFeeModal-actions">
           {Button.component({ className: 'Button Button--primary', onclick: () => { this.hide(); this.attrs.onconfirm(); } }, app.translator.trans('nodeloc-lottery.forum.modal.confirm_start_fee_action'))}
-          {Button.component({ className: 'Button', onclick: this.hide.bind(this) }, app.translator.trans('nodeloc-lottery.forum.modal.confirm_start_fee_cancel'))}
+          {Button.component({ className: 'Button LotteryStartFeeModal-cancel', onclick: this.hide.bind(this) }, app.translator.trans('nodeloc-lottery.forum.modal.confirm_start_fee_cancel'))}
         </div>
       </div>
     );

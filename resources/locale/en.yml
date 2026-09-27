@@ -97,6 +97,7 @@ nodeloc-lottery:
       start_fee_notice: Starting this lottery costs {fee} points.
       confirm_start_fee_title: Confirm lottery fee
       confirm_start_fee: Starting this lottery will deduct {fee} points. Continue?
+      confirm_start_fee_exemption: Members of the fee-exempt user group can start lotteries without paying points.
       confirm_start_fee_action: Confirm and publish
       confirm_start_fee_cancel: Cancel
       read_permission: Permission
