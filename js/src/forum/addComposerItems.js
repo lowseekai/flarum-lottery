@@ -44,7 +44,7 @@ export const addToComposer = (composer = discussionComposer) => {
               lottery: this.composer.fields.lottery,
               onsubmit: (lottery) => {
                 this.composer.fields.lottery = lottery;
-                syncLotteryPreviewForComposer(this.composer, document.querySelector('.ComposerBody-mentionsWrapper'));
+                syncLotteryPreviewForComposer(this.composer);
                 m.redraw();
               },
             });
@@ -67,6 +67,13 @@ export const addToComposer = (composer = discussionComposer) => {
 };
 
 function syncLotteryPreviewForComposer(composer, mentionsWrapper) {
+  if (!mentionsWrapper || !mentionsWrapper.getClientRects().length) {
+    mentionsWrapper = Array.from(document.querySelectorAll('.ComposerBody-mentionsWrapper')).find((wrapper) => {
+      const rect = wrapper.getBoundingClientRect();
+      return rect.width > 0 && rect.height > 0;
+    });
+  }
+
   const composerElement = mentionsWrapper?.closest('.Composer');
 
   if (!composer || !mentionsWrapper) {
