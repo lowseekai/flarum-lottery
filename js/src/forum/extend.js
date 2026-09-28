@@ -9,6 +9,6 @@ import LotteryParticipants from './models/LotteryParticipants';
 export default [
   new Extend.Store().add('lotteries', Lottery).add('lottery-options', LotteryOption).add('lottery-participants', LotteryParticipants),
   new Extend.Model(Post).hasOne('lottery').attribute('canStartLottery'),
-  new Extend.Model(Forum).attribute('canStartLottery').attribute('lotteryStartFee').attribute('canStartLotteryWithoutFee'),
+  new Extend.Model(Forum).attribute('canStartLottery').attribute('lotteryStartFee').attribute('canStartLotteryWithoutFee').attribute('canIgnoreEndDateLimit'),
   new Extend.Model(Discussion).attribute('hasLottery').attribute('canStartLottery'),
 ];

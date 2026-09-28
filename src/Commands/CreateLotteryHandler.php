@@ -94,7 +94,7 @@ class CreateLotteryHandler
             }
         }
 
-        $this->validator->assertValid($attributes);
+        $this->validator->assertValidForActor($attributes, $command->actor);
 
         foreach ($optionsData as $optionData) {
             // It is guaranteed all keys exist in the array because $optionData is manually created above

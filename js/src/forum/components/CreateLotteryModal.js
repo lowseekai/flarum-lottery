@@ -23,7 +23,8 @@ export default class CreateLotteryModal extends FormModal {
     this.minParticipants = Stream(0);
     this.maxParticipants = Stream(999999);
     this.datepickerMinDate = this.formatDate(undefined);
-    this.datepickerMaxDate = this.formatDate(dayjs().add(3, 'day'));
+    this.canIgnoreEndDateLimit = app.forum.canIgnoreEndDateLimit?.() ?? false;
+    this.datepickerMaxDate = this.canIgnoreEndDateLimit ? null : this.formatDate(dayjs().add(3, 'day'));
 
     const { lottery } = this.attrs;
 
@@ -133,7 +134,7 @@ export default class CreateLotteryModal extends FormModal {
             name="date"
             bidi={this.endDate}
             min={this.datepickerMinDate}
-            max={this.datepickerMaxDate}
+            max={this.datepickerMaxDate || undefined}
           />
           {Button.component({
             className: 'Button LotteryModal--button',
@@ -327,7 +328,7 @@ export default class CreateLotteryModal extends FormModal {
       return null;
     }
 
-    if (dayjs(this.endDate()).isAfter(dayjs(this.datepickerMaxDate))) {
+    if (this.datepickerMaxDate && dayjs(this.endDate()).isAfter(dayjs(this.datepickerMaxDate))) {
       alert(extractText(app.translator.trans('nodeloc-lottery.forum.modal.end_date_too_far')));
       return null;
     }

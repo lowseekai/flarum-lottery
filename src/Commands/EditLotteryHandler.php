@@ -66,7 +66,7 @@ class EditLotteryHandler
         $optionsProvided = array_key_exists('options', $attributes);
         $options = collect($optionsProvided ? Arr::get($attributes, 'options', []) : []);
 
-        $this->validator->assertValid($attributes);
+        $this->validator->assertValidForActor($attributes, $command->actor);
 
         if (isset($attributes['prizes'])) {
             $lottery->prizes = $attributes['prizes'];

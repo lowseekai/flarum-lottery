@@ -11,6 +11,7 @@ nodeloc-lottery:
       cover_image_help: 填写站内图片路径或 http/https 图片地址；留空时使用默认封面。
     permissions:
       start_without_fee: 发起抽奖免积分
+      ignoreEndDateLimit: 允许设置超过 3 天的开奖时间
       seeParticipants: 查看抽奖参与者
       start: 发起抽奖
       self_edit: 编辑自己发起的抽奖（需要帖子编辑权限）

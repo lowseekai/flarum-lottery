@@ -44,6 +44,14 @@ app.initializers.add('nodeloc/lottery', () => {
     )
     .registerPermission(
       {
+        icon: 'fas fa-calendar-alt',
+        label: app.translator.trans('nodeloc-lottery.admin.permissions.ignoreEndDateLimit'),
+        permission: 'lottery.ignoreEndDateLimit',
+      },
+      'start'
+    )
+    .registerPermission(
+      {
         icon: 'fas fa-signal',
         label: app.translator.trans('nodeloc-lottery.admin.permissions.seeParticipants'),
         permission: 'lottery.seeParticipants',

@@ -26,7 +26,7 @@ export default class EditLotteryModal extends CreateLotteryModal {
   }
 
   data() {
-    if (this.endDate() && dayjs(this.endDate()).isAfter(dayjs(this.datepickerMaxDate))) {
+    if (this.datepickerMaxDate && this.endDate() && dayjs(this.endDate()).isAfter(dayjs(this.datepickerMaxDate))) {
       alert(app.translator.trans('nodeloc-lottery.forum.modal.end_date_too_far'));
       return null;
     }

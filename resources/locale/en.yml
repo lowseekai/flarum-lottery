@@ -11,6 +11,7 @@ nodeloc-lottery:
       cover_image_help: Enter a site-relative path or an http/https image URL. Leave empty to use the default cover.
     permissions:
       start_without_fee: Start lotteries without paying the fee
+      ignoreEndDateLimit: Allow draw times beyond 3 days
       seeParticipants: View participants
       start: Start a lottery
       self_edit: Edit created lotterys (requires post edit permission)

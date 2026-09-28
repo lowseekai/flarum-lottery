@@ -14,11 +14,25 @@ namespace Nodeloc\Lottery\Validators;
 use Carbon\Carbon;
 use Flarum\Foundation\AbstractValidator;
 use Flarum\Locale\TranslatorInterface;
+use Flarum\User\User;
 use Illuminate\Support\Fluent;
 use Illuminate\Validation\Rule;
 
 class LotteryValidator extends AbstractValidator
 {
+    protected bool $allowExtendedEndDate = false;
+
+    public function assertValidForActor(array $attributes, User $actor): void
+    {
+        $this->allowExtendedEndDate = $actor->hasPermission('lottery.ignoreEndDateLimit');
+
+        try {
+            parent::assertValid($attributes);
+        } finally {
+            $this->allowExtendedEndDate = false;
+        }
+    }
+
     protected function getRules(): array
     {
         return [
@@ -42,7 +56,7 @@ class LotteryValidator extends AbstractValidator
                         return;
                     }
 
-                    if ($date->isAfter(Carbon::now('Asia/Shanghai')->addDays(3))) {
+                    if (!$this->allowExtendedEndDate && $date->isAfter(Carbon::now('Asia/Shanghai')->addDays(3))) {
                         $fail(resolve(TranslatorInterface::class)->trans('nodeloc-lottery.forum.modal.end_date_too_far'));
                     }
                 },

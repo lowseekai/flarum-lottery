@@ -138,6 +138,8 @@ return [
                 ->get(fn () => (int) resolve(\Flarum\Settings\SettingsRepositoryInterface::class)->get('nodeloc-lottery.startFee', 0)),
             Schema\Boolean::make('canStartLotteryWithoutFee')
                 ->get(fn ($forum, Context $context) => $context->getActor()->hasPermission('lottery.startWithoutFee')),
+            Schema\Boolean::make('canIgnoreEndDateLimit')
+                ->get(fn ($forum, Context $context) => $context->getActor()->hasPermission('lottery.ignoreEndDateLimit')),
         ]),
 
     (new Extend\ApiResource(Resource\UserResource::class))
